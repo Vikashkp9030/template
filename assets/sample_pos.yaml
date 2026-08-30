@@ -1,0 +1,54 @@
+template: classic
+paperSize: mm80
+taxRegime: gst_india
+interState: false
+
+company:
+  name: "ABC STORE"
+  gstin: "36ABCDE1234F1Z5"
+  phone: "+91 9876543210"
+  email: "store@abc.com"
+  address:
+    line1: "Madhapur"
+    city: "Hyderabad"
+    state: "Telangana"
+    country: "India"
+    pincode: "500081"
+
+customer:
+  name: "Walk-in Customer"
+  phone: "+91 9000000000"
+
+invoice:
+  number: "INV-10001"
+  date: "2026-08-28"
+  currency: "INR"
+  cashier: "Admin"
+  orderNumber: "POS-10001"
+  terms: "No returns on food items."
+
+payment:
+  method: "CASH"
+  status: "paid"
+  paidAmount: 700
+  changeAmount: 51
+
+items:
+  - sku: "BRG-01"
+    name: "Burger"
+    quantity: 2
+    unitPrice: 100
+    discount: 0
+    taxRate: 18
+  - sku: "PZA-01"
+    name: "Pizza"
+    quantity: 1
+    unitPrice: 250
+    discount: 20
+    taxRate: 18
+  - sku: "COF-01"
+    name: "Coffee"
+    quantity: 2
+    unitPrice: 60
+    discount: 0
+    taxRate: 18

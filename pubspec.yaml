@@ -1,0 +1,33 @@
+name: invoice_template_preview
+description: Invoice and thermal printer template preview studio for Flutter.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.6.1
+  go_router: ^16.2.1
+  yaml: ^3.1.3
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  intl: ^0.20.2
+  file_picker: ^10.3.2
+  qr_flutter: ^4.1.0
+  collection: ^1.19.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/sample_invoice.yaml
+    - assets/sample_pos.yaml
+    - assets/sample_erp.yaml

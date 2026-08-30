@@ -1,0 +1,90 @@
+# Invoice YAML data contract — see docs/yaml_data_contract.md
+template: professional
+paperSize: a4
+taxRegime: gst_india
+interState: false
+
+company:
+  name: "ABC Technologies Pvt Ltd"
+  gstin: "36ABCDE1234F1Z5"
+  phone: "+91 9876543210"
+  email: "billing@abctech.com"
+  website: "https://abctech.com"
+  address:
+    line1: "Plot 12, HITEC City"
+    line2: "Madhapur"
+    city: "Hyderabad"
+    state: "Telangana"
+    country: "India"
+    pincode: "500081"
+
+customer:
+  name: "Rahul Sharma"
+  phone: "+91 9123456789"
+  email: "rahul@example.com"
+  gstin: "36AAAAA1234A1Z5"
+  billingAddress:
+    line1: "12 Banjara Hills"
+    city: "Hyderabad"
+    state: "Telangana"
+    country: "India"
+    pincode: "500034"
+  shippingAddress:
+    line1: "Warehouse 4, Nacharam"
+    city: "Hyderabad"
+    state: "Telangana"
+    country: "India"
+    pincode: "500076"
+
+invoice:
+  number: "INV-2026-001"
+  date: "2026-08-28"
+  dueDate: "2026-09-05"
+  currency: "INR"
+  orderNumber: "SO-88421"
+  salesperson: "Anita Reddy"
+  warehouse: "HYD-WH-01"
+  cashier: "Admin"
+  placeOfSupply: "Telangana (36)"
+  reverseCharge: false
+  terms: "Payment due within 7 days. Goods once sold cannot be returned."
+  notes: "Thank you for your business."
+
+bank:
+  bankName: "HDFC Bank"
+  accountName: "ABC Technologies Pvt Ltd"
+  accountNumber: "50200011223344"
+  ifsc: "HDFC0001234"
+  upi: "abctech@hdfcbank"
+
+payment:
+  method: "UPI"
+  status: "partial"
+  paidAmount: 50000
+  changeAmount: 0
+
+items:
+  - sku: "LAP-001"
+    name: "Laptop"
+    hsnSac: "8471"
+    quantity: 1
+    unit: "NOS"
+    unitPrice: 65000
+    discount: 2000
+    taxRate: 18
+  - sku: "MOU-001"
+    name: "Wireless Mouse"
+    hsnSac: "8471"
+    quantity: 2
+    unit: "NOS"
+    unitPrice: 1200
+    discount: 100
+    taxRate: 18
+  - sku: "KBD-002"
+    name: "Mechanical Keyboard"
+    hsnSac: "8471"
+    quantity: 1
+    unit: "NOS"
+    unitPrice: 4500
+    discount: 0
+    taxRate: 18
