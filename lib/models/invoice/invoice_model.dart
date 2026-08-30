@@ -14,20 +14,31 @@ class InvoiceModel {
     required this.customer,
     required this.items,
     required this.payment,
+    this.documentTitle = 'TAX INVOICE',
+    this.numberLabel = 'Invoice #',
     this.dueDate,
     this.orderNumber,
     this.salesperson,
     this.warehouse,
+    this.branch,
     this.cashier,
     this.placeOfSupply,
     this.reverseCharge = false,
     this.taxRegime = TaxRegime.gstIndia,
     this.interState = false,
+    this.taxInclusive = false,
+    this.otherCharges = 0,
+    this.roundOff = 0,
+    this.headerDiscount = 0,
     this.terms,
     this.notes,
+    this.customerNotes,
     this.bank,
   });
 
+  /// Printed heading — e.g. TAX INVOICE, QUOTATION, SALES ORDER, DELIVERY CHALLAN.
+  final String documentTitle;
+  final String numberLabel;
   final String number;
   final DateTime date;
   final DateTime? dueDate;
@@ -39,16 +50,24 @@ class InvoiceModel {
   final String? orderNumber;
   final String? salesperson;
   final String? warehouse;
+  final String? branch;
   final String? cashier;
   final String? placeOfSupply;
   final bool reverseCharge;
   final TaxRegime taxRegime;
   final bool interState;
+  final bool taxInclusive;
+  final double otherCharges;
+  final double roundOff;
+  final double headerDiscount;
   final String? terms;
   final String? notes;
+  final String? customerNotes;
   final BankDetails? bank;
 
   InvoiceModel copyWith({
+    String? documentTitle,
+    String? numberLabel,
     String? number,
     DateTime? date,
     DateTime? dueDate,
@@ -60,16 +79,24 @@ class InvoiceModel {
     String? orderNumber,
     String? salesperson,
     String? warehouse,
+    String? branch,
     String? cashier,
     String? placeOfSupply,
     bool? reverseCharge,
     TaxRegime? taxRegime,
     bool? interState,
+    bool? taxInclusive,
+    double? otherCharges,
+    double? roundOff,
+    double? headerDiscount,
     String? terms,
     String? notes,
+    String? customerNotes,
     BankDetails? bank,
   }) {
     return InvoiceModel(
+      documentTitle: documentTitle ?? this.documentTitle,
+      numberLabel: numberLabel ?? this.numberLabel,
       number: number ?? this.number,
       date: date ?? this.date,
       dueDate: dueDate ?? this.dueDate,
@@ -81,13 +108,19 @@ class InvoiceModel {
       orderNumber: orderNumber ?? this.orderNumber,
       salesperson: salesperson ?? this.salesperson,
       warehouse: warehouse ?? this.warehouse,
+      branch: branch ?? this.branch,
       cashier: cashier ?? this.cashier,
       placeOfSupply: placeOfSupply ?? this.placeOfSupply,
       reverseCharge: reverseCharge ?? this.reverseCharge,
       taxRegime: taxRegime ?? this.taxRegime,
       interState: interState ?? this.interState,
+      taxInclusive: taxInclusive ?? this.taxInclusive,
+      otherCharges: otherCharges ?? this.otherCharges,
+      roundOff: roundOff ?? this.roundOff,
+      headerDiscount: headerDiscount ?? this.headerDiscount,
       terms: terms ?? this.terms,
       notes: notes ?? this.notes,
+      customerNotes: customerNotes ?? this.customerNotes,
       bank: bank ?? this.bank,
     );
   }

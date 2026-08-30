@@ -41,7 +41,8 @@ class ClassicThermalTemplate implements ThermalTemplate {
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 16, 10, 20),
-            child: Column(
+            child: SingleChildScrollView(
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
@@ -121,6 +122,7 @@ class ClassicThermalTemplate implements ThermalTemplate {
                 ),
                 const Text('Visit Again', textAlign: TextAlign.center),
               ],
+            ),
             ),
           ),
         ),

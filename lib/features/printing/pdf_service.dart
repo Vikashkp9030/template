@@ -48,7 +48,7 @@ class PdfService {
                     color: accent,
                   ),
                 ),
-                pw.Text('${template.title} · ${invoice.number}'),
+                pw.Text('${invoice.documentTitle} · ${invoice.number}'),
               ],
             ),
           ),

@@ -58,7 +58,7 @@ void main() {
         ),
       ),
     );
-    expect(find.text('ABC STORE'), findsOneWidget);
+    expect(find.text('SPICE GARDEN'), findsOneWidget);
     expect(find.textContaining('Thank You'), findsOneWidget);
   });
 

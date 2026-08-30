@@ -115,12 +115,13 @@ items:
       final invoice = DummyInvoiceData.invoice();
       final totals = calculator.calculate(invoice);
       // 65000 + 2400 + 4500 = 71900
-      expect(totals.subtotal, 71900);
-      expect(totals.discount, 2100);
-      expect(totals.tax, closeTo(12564, 0.01));
-      expect(totals.grandTotal, closeTo(82364, 0.01));
-      expect(totals.paidAmount, 50000);
-      expect(totals.balanceAmount, closeTo(32364, 0.01));
+      // 560 + 160 + 120 = 840; line discount 20; tax 5% on 820 = 41
+      expect(totals.subtotal, 840);
+      expect(totals.discount, 20);
+      expect(totals.tax, closeTo(41, 0.01));
+      expect(totals.grandTotal, closeTo(861, 0.01));
+      expect(totals.paidAmount, 500);
+      expect(totals.balanceAmount, closeTo(361, 0.01));
     });
 
     test('splits CGST and SGST for intra-state GST', () {

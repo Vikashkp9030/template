@@ -71,16 +71,16 @@ class ProfessionalInvoiceTemplate implements InvoiceTemplate {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text(
-                          'TAX INVOICE',
-                          style: TextStyle(
+                        Text(
+                          invoice.documentTitle,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
                             color: AppColors.professionalHeader,
                             letterSpacing: 1.2,
                           ),
                         ),
-                        Text('Invoice #: ${invoice.number}'),
+                        Text('${invoice.numberLabel} ${invoice.number}'),
                         Text('Date: ${DateFormatter.display(invoice.date)}'),
                         if (invoice.dueDate != null)
                           Text(

@@ -34,19 +34,28 @@ class InvoiceCalculator {
         );
       }
       final gross = item.quantity * item.unitPrice;
-      if (item.discount > gross) {
+      final discount = item.discountAmount;
+      if (discount > gross) {
         throw InvoiceValidationException(
           'Discount exceeds line amount for ${item.sku}.',
         );
       }
-      final discountedAmount = gross - item.discount;
-      final taxAmount = discountedAmount * item.taxRate / 100;
-      final lineTotal = discountedAmount + taxAmount;
+      final discountedAmount = gross - discount;
+      late final double taxAmount;
+      late final double lineTotal;
+      if (invoice.taxInclusive && item.taxRate > 0) {
+        final taxable = discountedAmount / (1 + item.taxRate / 100);
+        taxAmount = discountedAmount - taxable;
+        lineTotal = discountedAmount;
+      } else {
+        taxAmount = discountedAmount * item.taxRate / 100;
+        lineTotal = discountedAmount + taxAmount;
+      }
       lines.add(
         LineComputation(
           item: item,
           gross: gross,
-          discount: item.discount,
+          discount: discount,
           discountedAmount: discountedAmount,
           taxAmount: taxAmount,
           lineTotal: lineTotal,
@@ -55,9 +64,12 @@ class InvoiceCalculator {
     }
 
     final subtotal = lines.fold<double>(0, (s, l) => s + l.gross);
-    final discount = lines.fold<double>(0, (s, l) => s + l.discount);
+    final discount =
+        lines.fold<double>(0, (s, l) => s + l.discount) + invoice.headerDiscount;
     final tax = lines.fold<double>(0, (s, l) => s + l.taxAmount);
-    final grandTotal = subtotal - discount + tax;
+    final linesTotal = lines.fold<double>(0, (s, l) => s + l.lineTotal);
+    final grandTotal =
+        linesTotal - invoice.headerDiscount + invoice.otherCharges + invoice.roundOff;
     final paid = invoice.payment.paidAmount;
     final balance = grandTotal - paid;
 

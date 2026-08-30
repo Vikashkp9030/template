@@ -2,10 +2,10 @@ class AddressModel {
   const AddressModel({
     required this.line1,
     this.line2,
-    required this.city,
-    required this.state,
-    required this.country,
-    required this.pincode,
+    this.city = '',
+    this.state = '',
+    this.country = 'India',
+    this.pincode = '',
   });
 
   final String line1;
@@ -19,18 +19,24 @@ class AddressModel {
     final parts = [
       line1,
       if (line2 != null && line2!.isNotEmpty) line2,
-      city,
-      state,
-      country,
-      pincode,
+      if (city.isNotEmpty) city,
+      if (state.isNotEmpty) state,
+      if (country.isNotEmpty) country,
+      if (pincode.isNotEmpty) pincode,
     ];
     return parts.join(', ');
   }
 
-  List<String> get lines => [
-    line1,
-    if (line2 != null && line2!.isNotEmpty) line2!,
-    '$city, $state $pincode',
-    country,
-  ];
+  List<String> get lines {
+    return [
+      line1,
+      if (line2 != null && line2!.isNotEmpty) line2!,
+      [
+        if (city.isNotEmpty) city,
+        if (state.isNotEmpty) state,
+        if (pincode.isNotEmpty) pincode,
+      ].join(', '),
+      if (country.isNotEmpty) country,
+    ].where((e) => e.trim().isNotEmpty).toList();
+  }
 }

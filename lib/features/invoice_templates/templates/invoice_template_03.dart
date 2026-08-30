@@ -43,10 +43,10 @@ class GstInvoiceTemplate implements InvoiceTemplate {
                 width: double.infinity,
                 color: AppColors.gstBand,
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: const Text(
-                  'TAX INVOICE  ·  GST',
+                child: Text(
+                  '${invoice.documentTitle}  ·  GST',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.4,
@@ -77,7 +77,7 @@ class GstInvoiceTemplate implements InvoiceTemplate {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('Invoice No: ${invoice.number}'),
+                      Text('${invoice.numberLabel} ${invoice.number}'),
                       Text('Date: ${DateFormatter.display(invoice.date)}'),
                       if (invoice.dueDate != null)
                         Text(

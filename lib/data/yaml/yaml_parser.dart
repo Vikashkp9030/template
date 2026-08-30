@@ -69,7 +69,10 @@ class YamlParser {
     return ParsedInvoiceDocument(
       templateKey: reader.optionalString('template'),
       paperSizeKey: reader.optionalString('paperSize'),
-      invoice: InvoiceModel(
+        invoice: InvoiceModel(
+        documentTitle:
+            invoiceReader.optionalString('documentTitle') ?? 'TAX INVOICE',
+        numberLabel: invoiceReader.optionalString('numberLabel') ?? 'Invoice #',
         number: invoiceReader.requireString('number'),
         date: date,
         dueDate: due,
@@ -81,13 +84,21 @@ class YamlParser {
         orderNumber: invoiceReader.optionalString('orderNumber'),
         salesperson: invoiceReader.optionalString('salesperson'),
         warehouse: invoiceReader.optionalString('warehouse'),
+        branch: invoiceReader.optionalString('branch'),
         cashier: invoiceReader.optionalString('cashier'),
         placeOfSupply: invoiceReader.optionalString('placeOfSupply'),
         reverseCharge: invoiceReader.optionalBool('reverseCharge'),
+        taxInclusive: invoiceReader.optionalBool('taxInclusive'),
+        otherCharges:
+            invoiceReader.optionalNum('otherCharges')?.toDouble() ?? 0,
+        roundOff: invoiceReader.optionalNum('roundOff')?.toDouble() ?? 0,
+        headerDiscount:
+            invoiceReader.optionalNum('headerDiscount')?.toDouble() ?? 0,
         taxRegime: _regime(reader.optionalString('taxRegime')),
         interState: reader.optionalBool('interState'),
         terms: invoiceReader.optionalString('terms'),
         notes: invoiceReader.optionalString('notes'),
+        customerNotes: invoiceReader.optionalString('customerNotes'),
         bank: _bank(reader.optionalMap('bank')),
       ),
     );
@@ -129,10 +140,10 @@ class YamlParser {
     return AddressModel(
       line1: reader.requireString('line1'),
       line2: reader.optionalString('line2'),
-      city: reader.requireString('city'),
-      state: reader.requireString('state'),
+      city: reader.optionalString('city') ?? '',
+      state: reader.optionalString('state') ?? '',
       country: reader.optionalString('country') ?? 'India',
-      pincode: reader.requireString('pincode'),
+      pincode: reader.optionalString('pincode') ?? '',
     );
   }
 
@@ -149,7 +160,10 @@ class YamlParser {
       unit: reader.optionalString('unit') ?? 'NOS',
       unitPrice: reader.requireNum('unitPrice').toDouble(),
       discount: reader.optionalNum('discount')?.toDouble() ?? 0,
+      discountType: reader.optionalString('discountType') ?? 'AMOUNT',
       taxRate: reader.optionalNum('taxRate')?.toDouble() ?? 0,
+      freeQuantity: reader.optionalNum('freeQuantity')?.toDouble() ?? 0,
+      description: reader.optionalString('description'),
     );
   }
 

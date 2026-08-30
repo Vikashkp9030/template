@@ -8,20 +8,23 @@ import '../../models/invoice/payment_model.dart';
 class DummyPosData {
   static InvoiceModel order() {
     return InvoiceModel(
-      number: 'INV-10001',
+      documentTitle: 'POS BILL',
+      numberLabel: 'Bill #',
+      number: 'POS-10001',
       date: DateTime(2026, 8, 28, 14, 32),
       currency: 'INR',
       cashier: 'Admin',
       orderNumber: 'POS-10001',
+      branch: 'Madhapur',
       taxRegime: TaxRegime.gstIndia,
       interState: false,
       notes: 'Thank You! Visit Again',
       terms: 'No returns on food items.',
       company: const CompanyModel(
-        name: 'ABC STORE',
-        gstin: '36ABCDE1234F1Z5',
+        name: 'SPICE GARDEN',
+        gstin: '36AABCU9603R1ZX',
         phone: '+91 9876543210',
-        email: 'store@abc.com',
+        email: 'store@spicegarden.in',
         address: AddressModel(
           line1: 'Madhapur',
           city: 'Hyderabad',
@@ -43,25 +46,28 @@ class DummyPosData {
       items: const [
         InvoiceItemModel(
           sku: 'BRG-01',
-          name: 'Burger',
+          name: 'Veg Burger',
+          hsnSac: '996331',
           quantity: 2,
           unitPrice: 100,
-          taxRate: 18,
+          taxRate: 5,
         ),
         InvoiceItemModel(
           sku: 'PZA-01',
-          name: 'Pizza',
+          name: 'Margherita Pizza',
+          hsnSac: '996331',
           quantity: 1,
           unitPrice: 250,
           discount: 20,
-          taxRate: 18,
+          taxRate: 5,
         ),
         InvoiceItemModel(
           sku: 'COF-01',
-          name: 'Coffee',
+          name: 'Filter Coffee',
+          hsnSac: '996331',
           quantity: 2,
           unitPrice: 60,
-          taxRate: 18,
+          taxRate: 5,
         ),
       ],
     );

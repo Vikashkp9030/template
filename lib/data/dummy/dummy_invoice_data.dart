@@ -5,14 +5,15 @@ import '../../models/invoice/invoice_item_model.dart';
 import '../../models/invoice/invoice_model.dart';
 import '../../models/invoice/payment_model.dart';
 
+/// Dummy document shaped like a POS / ERP sales invoice (INR, GST India).
 class DummyInvoiceData {
   static InvoiceModel invoice() {
     const company = CompanyModel(
-      name: 'ABC Technologies Pvt Ltd',
-      gstin: '36ABCDE1234F1Z5',
+      name: 'Spice Garden Restaurant',
+      gstin: '36AABCU9603R1ZX',
       phone: '+91 9876543210',
-      email: 'billing@abctech.com',
-      website: 'https://abctech.com',
+      email: 'accounts@spicegarden.in',
+      website: 'https://spicegarden.in',
       address: AddressModel(
         line1: 'Plot 12, HITEC City',
         line2: 'Madhapur',
@@ -45,6 +46,8 @@ class DummyInvoiceData {
     );
 
     return InvoiceModel(
+      documentTitle: 'TAX INVOICE',
+      numberLabel: 'Invoice #',
       number: 'INV-2026-001',
       date: DateTime(2026, 8, 28),
       dueDate: DateTime(2026, 9, 5),
@@ -53,53 +56,59 @@ class DummyInvoiceData {
       customer: customer,
       salesperson: 'Anita Reddy',
       warehouse: 'HYD-WH-01',
+      branch: 'Madhapur',
       cashier: 'Admin',
       orderNumber: 'SO-88421',
       placeOfSupply: 'Telangana (36)',
       reverseCharge: false,
       taxRegime: TaxRegime.gstIndia,
       interState: false,
+      taxInclusive: false,
       terms: 'Payment due within 7 days. Goods once sold cannot be returned.',
       notes: 'Thank you for your business.',
+      customerNotes: 'Please pack extra chutney.',
       bank: const BankDetails(
         bankName: 'HDFC Bank',
-        accountName: 'ABC Technologies Pvt Ltd',
+        accountName: 'Spice Garden Restaurant',
         accountNumber: '50200011223344',
         ifsc: 'HDFC0001234',
-        upi: 'abctech@hdfcbank',
+        upi: 'spicegarden@hdfcbank',
       ),
       payment: const PaymentInfo(
         method: 'UPI',
         status: 'partial',
-        paidAmount: 50000,
+        paidAmount: 500,
       ),
       items: const [
         InvoiceItemModel(
-          sku: 'LAP-001',
-          name: 'Laptop',
-          hsnSac: '8471',
-          quantity: 1,
-          unitPrice: 65000,
-          discount: 2000,
-          taxRate: 18,
-        ),
-        InvoiceItemModel(
-          sku: 'MOU-001',
-          name: 'Wireless Mouse',
-          hsnSac: '8471',
+          sku: 'ITM-PBM',
+          name: 'Paneer Butter Masala',
+          hsnSac: '996331',
           quantity: 2,
-          unitPrice: 1200,
-          discount: 100,
-          taxRate: 18,
+          unit: 'NOS',
+          unitPrice: 280,
+          discount: 0,
+          taxRate: 5,
         ),
         InvoiceItemModel(
-          sku: 'KBD-002',
-          name: 'Mechanical Keyboard',
-          hsnSac: '8471',
-          quantity: 1,
-          unitPrice: 4500,
+          sku: 'ITM-NAAN',
+          name: 'Butter Naan',
+          hsnSac: '996331',
+          quantity: 4,
+          unit: 'NOS',
+          unitPrice: 40,
           discount: 0,
-          taxRate: 18,
+          taxRate: 5,
+        ),
+        InvoiceItemModel(
+          sku: 'ITM-DOSA',
+          name: 'Masala Dosa',
+          hsnSac: '996331',
+          quantity: 1,
+          unit: 'NOS',
+          unitPrice: 120,
+          discount: 20,
+          taxRate: 5,
         ),
       ],
     );

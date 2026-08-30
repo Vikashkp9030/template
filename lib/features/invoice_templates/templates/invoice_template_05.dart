@@ -67,13 +67,13 @@ class PremiumInvoiceTemplate implements InvoiceTemplate {
                     ],
                   ),
                 ),
-                const Text(
-                  'INVOICE',
-                  style: TextStyle(
+                Text(
+                  invoice.documentTitle,
+                  style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontSize: 22,
                     fontWeight: FontWeight.w200,
-                    letterSpacing: 6,
+                    letterSpacing: 4,
                   ),
                 ),
               ],

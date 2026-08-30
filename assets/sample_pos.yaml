@@ -4,10 +4,10 @@ taxRegime: gst_india
 interState: false
 
 company:
-  name: "ABC STORE"
-  gstin: "36ABCDE1234F1Z5"
+  name: "SPICE GARDEN"
+  gstin: "36AABCU9603R1ZX"
   phone: "+91 9876543210"
-  email: "store@abc.com"
+  email: "store@spicegarden.in"
   address:
     line1: "Madhapur"
     city: "Hyderabad"
@@ -20,7 +20,9 @@ customer:
   phone: "+91 9000000000"
 
 invoice:
-  number: "INV-10001"
+  documentTitle: "POS BILL"
+  numberLabel: "Bill #"
+  number: "POS-10001"
   date: "2026-08-28"
   currency: "INR"
   cashier: "Admin"
@@ -35,20 +37,23 @@ payment:
 
 items:
   - sku: "BRG-01"
-    name: "Burger"
+    name: "Veg Burger"
+    hsnSac: "996331"
     quantity: 2
     unitPrice: 100
     discount: 0
-    taxRate: 18
+    taxRate: 5
   - sku: "PZA-01"
-    name: "Pizza"
+    name: "Margherita Pizza"
+    hsnSac: "996331"
     quantity: 1
     unitPrice: 250
     discount: 20
-    taxRate: 18
+    taxRate: 5
   - sku: "COF-01"
-    name: "Coffee"
+    name: "Filter Coffee"
+    hsnSac: "996331"
     quantity: 2
     unitPrice: 60
     discount: 0
-    taxRate: 18
+    taxRate: 5
