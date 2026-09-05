@@ -19,7 +19,7 @@ class TemplateSelector extends StatelessWidget {
     required ValueChanged<ThermalTemplateType> onChanged,
   }) : thermalValue = value,
        onThermalChanged = onChanged,
-       value = InvoiceTemplateType.professional,
+       value = InvoiceTemplateType.basic,
        onChanged = _noop,
        _mode = _SelectorMode.thermal;
 

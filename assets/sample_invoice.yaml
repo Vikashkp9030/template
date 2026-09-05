@@ -1,5 +1,5 @@
 # Invoice YAML data contract — see docs/yaml_data_contract.md
-template: professional
+template: basic
 paperSize: a4
 taxRegime: gst_india
 interState: false

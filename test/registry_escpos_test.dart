@@ -10,14 +10,14 @@ import 'package:invoice_template_preview/features/thermal_templates/thermal_temp
 import 'package:invoice_template_preview/models/printer/thermal_paper_size.dart';
 
 void main() {
-  test('invoice registry exposes six templates', () {
+  test('invoice registry exposes core templates', () {
     expect(InvoiceTemplateRegistry.templates.keys, InvoiceTemplateType.values);
     for (final type in InvoiceTemplateType.values) {
       expect(InvoiceTemplateRegistry.get(type).type, type);
     }
   });
 
-  test('thermal registry exposes two templates', () {
+  test('thermal registry exposes thermal template', () {
     expect(ThermalTemplateRegistry.templates.keys, ThermalTemplateType.values);
   });
 
@@ -25,7 +25,7 @@ void main() {
     final invoice = DummyPosData.order();
     final result = ThermalPrintService().generate(
       invoice: invoice,
-      template: ThermalTemplateType.classic,
+      template: ThermalTemplateType.thermal,
       paperSize: ThermalPaperSize.mm80,
     );
     expect(result.commands.any((c) => c.kind == 'cut'), isTrue);

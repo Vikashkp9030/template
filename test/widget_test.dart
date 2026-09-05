@@ -19,7 +19,7 @@ void main() {
             height: 1100,
             child: InvoicePreview(
               invoice: invoice,
-              template: InvoiceTemplateType.professional,
+              template: InvoiceTemplateType.basic,
             ),
           ),
         ),
@@ -35,14 +35,13 @@ void main() {
             height: 1100,
             child: InvoicePreview(
               invoice: invoice,
-              template: InvoiceTemplateType.modern,
+              template: InvoiceTemplateType.standard,
             ),
           ),
         ),
       ),
     );
     expect(find.text(invoice.number), findsWidgets);
-    expect(find.text('TAX INVOICE'), findsNothing);
   });
 
   testWidgets('thermal template renders store name', (tester) async {
@@ -52,14 +51,14 @@ void main() {
         home: Scaffold(
           body: ThermalPreview(
             invoice: invoice,
-            template: ThermalTemplateType.classic,
+            template: ThermalTemplateType.thermal,
             paperSize: ThermalPaperSize.mm80,
           ),
         ),
       ),
     );
     expect(find.text('SPICE GARDEN'), findsOneWidget);
-    expect(find.textContaining('Thank You'), findsOneWidget);
+    expect(find.textContaining('THANK YOU'), findsOneWidget);
   });
 
   testWidgets('thermal paper size changes preview width', (tester) async {
@@ -70,7 +69,7 @@ void main() {
           body: ThermalPreview(
             key: const ValueKey('58'),
             invoice: invoice,
-            template: ThermalTemplateType.classic,
+            template: ThermalTemplateType.thermal,
             paperSize: ThermalPaperSize.mm58,
           ),
         ),
@@ -89,7 +88,7 @@ void main() {
           body: ThermalPreview(
             key: const ValueKey('80'),
             invoice: invoice,
-            template: ThermalTemplateType.classic,
+            template: ThermalTemplateType.thermal,
             paperSize: ThermalPaperSize.mm80,
           ),
         ),

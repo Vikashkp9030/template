@@ -64,8 +64,8 @@ class PreviewController extends Notifier<PreviewState> {
   PreviewState build() {
     return PreviewState(
       invoice: DummyInvoiceData.invoice(),
-      invoiceTemplate: InvoiceTemplateType.professional,
-      thermalTemplate: ThermalTemplateType.classic,
+      invoiceTemplate: InvoiceTemplateType.basic,
+      thermalTemplate: ThermalTemplateType.thermal,
       paperSize: InvoicePaperSize.a4,
       thermalPaperSize: ThermalPaperSize.mm80,
       printerConfig: const PrinterConfig(),
@@ -111,7 +111,7 @@ class PreviewController extends Notifier<PreviewState> {
   void loadErpInvoice() {
     state = state.copyWith(
       invoice: DummyErpData.invoice(),
-      invoiceTemplate: InvoiceTemplateType.gst,
+      invoiceTemplate: InvoiceTemplateType.standard,
       sourceLabel: 'Dummy ERP invoice',
       clearError: true,
     );

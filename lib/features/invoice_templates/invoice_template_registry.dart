@@ -1,28 +1,23 @@
 import 'invoice_template.dart';
 import 'invoice_template_type.dart';
-import 'templates/invoice_template_01.dart';
-import 'templates/invoice_template_02.dart';
-import 'templates/invoice_template_03.dart';
-import 'templates/invoice_template_04.dart';
-import 'templates/invoice_template_05.dart';
-import 'templates/invoice_template_06.dart';
+import 'templates/invoice_template_basic.dart';
+import 'templates/invoice_template_standard.dart';
+import 'templates/invoice_template_premium.dart';
 
 class InvoiceTemplateRegistry {
   InvoiceTemplateRegistry._();
 
   static final Map<InvoiceTemplateType, InvoiceTemplate> templates = {
-    InvoiceTemplateType.professional: ProfessionalInvoiceTemplate(),
-    InvoiceTemplateType.modern: ModernInvoiceTemplate(),
-    InvoiceTemplateType.gst: GstInvoiceTemplate(),
-    InvoiceTemplateType.retail: RetailInvoiceTemplate(),
+    InvoiceTemplateType.basic: BasicInvoiceTemplate(),
+    InvoiceTemplateType.standard: StandardInvoiceTemplate(),
     InvoiceTemplateType.premium: PremiumInvoiceTemplate(),
-    InvoiceTemplateType.compact: CompactInvoiceTemplate(),
   };
 
   static InvoiceTemplate get(InvoiceTemplateType type) {
     final template = templates[type];
     if (template == null) {
-      throw StateError('No invoice template registered for $type');
+      // Fallback to basic if not found
+      return templates[InvoiceTemplateType.basic]!;
     }
     return template;
   }

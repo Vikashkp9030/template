@@ -38,7 +38,7 @@ class HostInvoicePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return InvoiceTemplateRenderer(
       invoice: invoice,
-      template: InvoiceTemplateType.gst,
+      template: InvoiceTemplateType.basic,
       paperSize: InvoicePaperSize.a4,
     );
   }
@@ -50,7 +50,7 @@ Thermal:
 ```dart
 ThermalPreview(
   invoice: invoice,
-  template: ThermalTemplateType.classic,
+  template: ThermalTemplateType.thermal,
   paperSize: ThermalPaperSize.mm80,
 );
 ```
@@ -60,12 +60,12 @@ Print:
 ```dart
 await InvoicePrintService.printInvoice(
   invoice: invoice,
-  template: InvoiceTemplateType.professional,
+  template: InvoiceTemplateType.basic,
 );
 
 await ThermalPrintService.printReceipt(
   invoice: invoice,
-  template: ThermalTemplateType.classic,
+  template: ThermalTemplateType.thermal,
   paperSize: ThermalPaperSize.mm80,
 );
 ```

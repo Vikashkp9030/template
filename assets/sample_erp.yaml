@@ -1,4 +1,4 @@
-template: gst
+template: standard
 paperSize: a4
 taxRegime: gst_india
 interState: true

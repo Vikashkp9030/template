@@ -73,12 +73,12 @@ import 'package:invoice_template_preview/invoice_template_preview.dart';
 
 InvoicePreview(
   invoice: invoice,
-  template: InvoiceTemplateType.professional,
+  template: InvoiceTemplateType.basic,
 );
 
 ThermalPreview(
   invoice: invoice,
-  template: ThermalTemplateType.classic,
+  template: ThermalTemplateType.thermal,
   paperSize: ThermalPaperSize.mm80,
 );
 ```
@@ -94,7 +94,7 @@ Programmatically:
 ```dart
 await InvoicePrintService.printInvoice(
   invoice: invoice,
-  template: InvoiceTemplateType.professional,
+  template: InvoiceTemplateType.basic,
 );
 ```
 
@@ -117,8 +117,8 @@ Until hardware is available, use **Mock Printer** in settings.
 Templates are looked up by enum in a map — no large `if/else` trees:
 
 ```dart
-InvoiceTemplateRegistry.get(InvoiceTemplateType.gst);
-ThermalTemplateRegistry.get(ThermalTemplateType.modern);
+InvoiceTemplateRegistry.get(InvoiceTemplateType.basic);
+ThermalTemplateRegistry.get(ThermalTemplateType.thermal);
 ```
 
 ## Architecture

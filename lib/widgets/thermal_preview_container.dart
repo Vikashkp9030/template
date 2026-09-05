@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
 import '../models/printer/thermal_paper_size.dart';
 
 class ThermalPreviewContainer extends StatelessWidget {
@@ -24,9 +23,9 @@ class ThermalPreviewContainer extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: AppColors.receiptPaper,
-            boxShadow: const [
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
               BoxShadow(
                 color: Color(0x33000000),
                 blurRadius: 12,

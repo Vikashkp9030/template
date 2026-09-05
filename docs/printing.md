@@ -7,7 +7,7 @@
 ```dart
 await InvoicePrintService.printInvoice(
   invoice: invoice,
-  template: InvoiceTemplateType.professional,
+  template: InvoiceTemplateType.basic,
   paperSize: InvoicePaperSize.a4,
 );
 ```
@@ -33,7 +33,7 @@ abstract class ThermalPrinter {
 ```dart
 await ThermalPrintService.printReceipt(
   invoice: invoice,
-  template: ThermalTemplateType.classic,
+  template: ThermalTemplateType.thermal,
   paperSize: ThermalPaperSize.mm80,
 );
 ```

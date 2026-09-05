@@ -57,14 +57,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/erp',
         builder: (context, state) => const InvoicePreviewPage(
-          initialTemplate: InvoiceTemplateType.gst,
+          initialTemplate: InvoiceTemplateType.standard,
           loadErp: true,
         ),
       ),
       GoRoute(
         path: '/pos',
         builder: (context, state) => const ThermalPreviewPage(
-          initialTemplate: ThermalTemplateType.classic,
+          initialTemplate: ThermalTemplateType.thermal,
           loadPos: true,
         ),
       ),

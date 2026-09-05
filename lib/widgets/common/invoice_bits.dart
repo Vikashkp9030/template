@@ -9,7 +9,7 @@ class LogoMark extends StatelessWidget {
     super.key,
     required this.company,
     this.size = 48,
-    this.background = AppColors.professionalHeader,
+    this.background = Colors.black87,
     this.foreground = Colors.white,
   });
 
