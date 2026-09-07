@@ -40,7 +40,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           const SizedBox(height: 30),
           _buildBillingSection(invoice),
           const SizedBox(height: 20),
-          _buildInfoBar(),
+          _buildInfoBar(invoice),
           const SizedBox(height: 20),
           Expanded(
             child: Row(
@@ -52,7 +52,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
                 const SizedBox(width: 20),
                 SizedBox(
                   width: 220,
-                  child: _buildTotalsBox(totals, invoice.currency),
+                  child: _buildTotalsBox(totals, invoice.currency, invoice),
                 ),
               ],
             ),
@@ -62,12 +62,12 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: _buildCommentsBox(),
+                child: _buildCommentsBox(invoice),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          _buildFooter(),
+          _buildFooter(invoice),
         ],
       ),
     );
@@ -136,19 +136,28 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   Widget _buildBillingSection(InvoiceModel invoice) {
+    final billToLines = [
+      invoice.customer.name,
+      if (invoice.customer.billingAddress != null) invoice.customer.billingAddress!.singleLine,
+      if (invoice.customer.phone != null) 'Phone: ${invoice.customer.phone}',
+      if (invoice.customer.email != null) 'Email: ${invoice.customer.email}',
+      if (invoice.customer.gstin != null) 'GSTIN: ${invoice.customer.gstin}',
+    ];
+
+    final shipToLines = [
+      invoice.customer.name,
+      if (invoice.customer.shippingAddress != null) invoice.customer.shippingAddress!.singleLine,
+    ];
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: _buildBillingCard('BILL TO:', [
-            invoice.customer.name,
-            if (invoice.customer.billingAddress != null) invoice.customer.billingAddress!.singleLine,
-            if (invoice.customer.phone != null) 'Phone: ${invoice.customer.phone}',
-          ]),
+          child: _buildBillingCard('BILL TO:', billToLines),
         ),
         const SizedBox(width: 40),
         Expanded(
-          child: _buildBillingCard('SHIP TO (if different):', []),
+          child: _buildBillingCard('SHIP TO:', shipToLines),
         ),
       ],
     );
@@ -175,7 +184,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
     );
   }
 
-  Widget _buildInfoBar() {
+  Widget _buildInfoBar(InvoiceModel invoice) {
     return Container(
       decoration: BoxDecoration(border: Border.all(color: Color(theme.divider))),
       child: Column(
@@ -183,38 +192,21 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           Row(
             children: [
               _buildInfoCell('SALESPERSON'),
-              _buildInfoCell('P.O. #'),
-              _buildInfoCell('SHIP DATE'),
-              _buildInfoCell('SHIP VIA'),
-              _buildInfoCell('F.O.B.'),
-              _buildInfoCell('TERMS'),
+              _buildInfoCell('ORDER #'),
+              _buildInfoCell('WAREHOUSE'),
+              _buildInfoCell('BRANCH'),
+              _buildInfoCell('PLACE OF SUPPLY'),
+              _buildInfoCell('TAX REGIME'),
             ],
           ),
           Row(
             children: [
-              Expanded(child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
-              )),
-              Expanded(child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
-              )),
-              Expanded(child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
-              )),
-              Expanded(child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
-              )),
-              Expanded(child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
-              )),
-              Expanded(child: Container(
-                padding: const EdgeInsets.all(8),
-              )),
+              _buildInfoValue(invoice.salesperson ?? ''),
+              _buildInfoValue(invoice.orderNumber ?? ''),
+              _buildInfoValue(invoice.warehouse ?? ''),
+              _buildInfoValue(invoice.branch ?? ''),
+              _buildInfoValue(invoice.placeOfSupply ?? ''),
+              _buildInfoValue(invoice.taxRegime.toString().split('.').last.toUpperCase()),
             ],
           ),
         ],
@@ -234,6 +226,22 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           label,
           textAlign: TextAlign.center,
           style: theme.type.tableHeader.flutter,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoValue(String value) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border(right: BorderSide(color: Color(theme.divider))),
+        ),
+        child: Text(
+          value,
+          textAlign: TextAlign.center,
+          style: theme.type.body.flutter.copyWith(fontSize: 10),
         ),
       ),
     );
@@ -287,7 +295,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             _buildTableCell(''),
             _buildTableCell(''),
             _buildTableCell(''),
-            _buildTableCell('${currency} 0.00', align: TextAlign.right),
+            _buildTableCell('$currency 0.00', align: TextAlign.right),
           ],
         )),
       ],
@@ -316,7 +324,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
     );
   }
 
-  Widget _buildTotalsBox(InvoiceTotals totals, String currency) {
+  Widget _buildTotalsBox(InvoiceTotals totals, String currency, InvoiceModel invoice) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Color(theme.divider)),
@@ -325,19 +333,41 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
       child: Column(
         children: [
           _buildTotalRow('SUBTOTAL', '$currency ${totals.subtotal.toStringAsFixed(2)}'),
-          _buildTotalRow('TAX RATE', '0.00%'),
+          _buildTotalRow('CGST (2.5%)', '$currency ${(totals.tax / 2).toStringAsFixed(2)}'),
+          _buildTotalRow('SGST (2.5%)', '$currency ${(totals.tax / 2).toStringAsFixed(2)}'),
           _buildTotalRow('TAX', '$currency ${totals.tax.toStringAsFixed(2)}'),
-          _buildTotalRow('S & H', '$currency 0.00'),
-          _buildTotalRow('OTHER', '$currency 0.00'),
+          if (invoice.otherCharges > 0)
+            _buildTotalRow('OTHER CHARGES', '$currency ${invoice.otherCharges.toStringAsFixed(2)}'),
           _buildTotalRow('TOTAL', '$currency ${totals.grandTotal.toStringAsFixed(2)}', isTotal: true),
+          if (invoice.payment.paidAmount > 0)
+            _buildTotalRow('PAID AMOUNT', '$currency ${invoice.payment.paidAmount.toStringAsFixed(2)}', isPaid: true),
+          if (invoice.payment.paidAmount > 0)
+            _buildTotalRow('BALANCE DUE', '$currency ${(totals.grandTotal - invoice.payment.paidAmount).toStringAsFixed(2)}', isBalance: true),
         ],
       ),
     );
   }
 
-  Widget _buildTotalRow(String label, String value, {bool isTotal = false}) {
+  Widget _buildTotalRow(String label, String value, {bool isTotal = false, bool isPaid = false, bool isBalance = false}) {
+    TextStyle labelStyle = theme.type.totalLabel.flutter.copyWith(fontSize: 11);
+    TextStyle valueStyle = theme.type.totalValue.flutter.copyWith(fontSize: 11);
+    Color? bgColor;
+
+    if (isTotal) {
+      labelStyle = theme.type.grandTotalLabel.flutter.copyWith(fontSize: 11);
+      valueStyle = theme.type.grandTotalValue.flutter.copyWith(fontSize: 11);
+      bgColor = const Color(0xFFE8E8E8);
+    } else if (isPaid) {
+      labelStyle = labelStyle.copyWith(color: const Color(0xFF2E7D32));
+      valueStyle = valueStyle.copyWith(color: const Color(0xFF2E7D32));
+    } else if (isBalance) {
+      labelStyle = labelStyle.copyWith(color: const Color(0xFFC62828), fontWeight: FontWeight.bold);
+      valueStyle = valueStyle.copyWith(color: const Color(0xFFC62828), fontWeight: FontWeight.bold);
+    }
+
     return Container(
       decoration: BoxDecoration(
+        color: bgColor,
         border: Border(bottom: BorderSide(color: Color(theme.divider))),
       ),
       child: Row(
@@ -345,32 +375,19 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                label,
-                style: (isTotal
-                  ? theme.type.grandTotalLabel.flutter
-                  : theme.type.totalLabel.flutter
-                ).copyWith(fontSize: 11),
-              ),
+              child: Text(label, style: labelStyle),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: (isTotal
-                ? theme.type.grandTotalValue.flutter
-                : theme.type.totalValue.flutter
-              ).copyWith(fontSize: 11),
-            ),
+            child: Text(value, textAlign: TextAlign.right, style: valueStyle),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCommentsBox() {
+  Widget _buildCommentsBox(InvoiceModel invoice) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Color(theme.divider)),
@@ -380,28 +397,86 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Other Comments or Special Instructions',
-            style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 11),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(height: 80),
+          if (invoice.terms != null) ...[
+            Text(
+              'Terms & Conditions',
+              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              invoice.terms!,
+              style: theme.type.body.flutter.copyWith(fontSize: 10),
+            ),
+            const SizedBox(height: 12),
+          ],
+          if (invoice.notes != null) ...[
+            Text(
+              'Notes',
+              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              invoice.notes!,
+              style: theme.type.body.flutter.copyWith(fontSize: 10),
+            ),
+            const SizedBox(height: 12),
+          ],
+          if (invoice.customerNotes != null) ...[
+            Text(
+              'Special Instructions',
+              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              invoice.customerNotes!,
+              style: theme.type.body.flutter.copyWith(fontSize: 10, fontStyle: FontStyle.italic),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(InvoiceModel invoice) {
     return Column(
       children: [
+        if (invoice.bank != null) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              border: Border.all(color: Color(theme.divider)),
+              color: Color(theme.surfaceMuted),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Bank Details', style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 10)),
+                    const SizedBox(height: 4),
+                    Text('${invoice.bank!.bankName} • ${invoice.bank!.accountNumber}', style: theme.type.body.flutter.copyWith(fontSize: 9)),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('Authorized Signature', style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 10)),
+                    const SizedBox(height: 20),
+                    SizedBox(width: 80, child: Container(
+                      height: 1,
+                      color: const Color(0xFF333333),
+                    )),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
         Text(
           'Thank You For Your Business!',
           style: theme.type.footer.flutter.copyWith(fontStyle: FontStyle.italic, fontSize: 12),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          'If you have any questions about this invoice, please contact us',
-          style: theme.type.footer.flutter.copyWith(fontSize: 10, color: const Color(0xFF666666)),
         ),
       ],
     );
