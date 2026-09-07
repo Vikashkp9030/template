@@ -77,119 +77,128 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
   /// Header: Company info on left, INVOICE title + date fields on right
   Widget _buildHeaderSection(InvoiceModel invoice) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Left: Company details
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                invoice.company.name,
-                style: const TextStyle(
-                  fontSize: 6.5,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF000000),
-                ),
-              ),
-              const SizedBox(height: 1.5),
-              Text(
-                invoice.company.address.line1,
-                style: const TextStyle(fontSize: 5, color: Color(0xFF333333)),
-              ),
-              Text(
-                '${invoice.company.address.city}, ${invoice.company.address.state} ${invoice.company.address.pincode}',
-                style: const TextStyle(fontSize: 5, color: Color(0xFF333333)),
-              ),
-              const SizedBox(height: 1),
-              Text(
-                'Phone: ${invoice.company.phone}',
-                style: const TextStyle(fontSize: 5, color: Color(0xFF333333)),
-              ),
-              Text(
-                'Email: ${invoice.company.email}',
-                style: const TextStyle(fontSize: 5, color: Color(0xFF333333)),
-              ),
-            ],
-          ),
-        ),
-
-        // Right: INVOICE title + date boxes
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'INVOICE',
-              style: const TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1e3a5f),
-                height: 1.0,
+            // Left: Company details with accent bar
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 3,
+                    height: 28,
+                    color: const Color(0xFF1e3a5f),
+                    margin: const EdgeInsets.only(bottom: 4),
+                  ),
+                  Text(
+                    invoice.company.name,
+                    style: const TextStyle(
+                      fontSize: 7,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1e3a5f),
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 2.5),
+                  Text(
+                    invoice.company.address.line1,
+                    style: const TextStyle(fontSize: 5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    '${invoice.company.address.city}, ${invoice.company.address.state} ${invoice.company.address.pincode}',
+                    style: const TextStyle(fontSize: 5, color: Color(0xFF555555)),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Phone: ${invoice.company.phone}',
+                    style: const TextStyle(fontSize: 5, color: Color(0xFF666666), fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    'Email: ${invoice.company.email}',
+                    style: const TextStyle(fontSize: 5, color: Color(0xFF666666), fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 4),
-            Row(
+
+            // Right: INVOICE title + date boxes
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text('DATE:', style: TextStyle(fontSize: 4.5, fontWeight: FontWeight.bold)),
-                    Container(
-                      width: 50,
-                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1.5),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFF999999), width: 0.5),
-                      ),
-                      child: Text(
-                        DateFormatter.display(invoice.date),
-                        style: const TextStyle(fontSize: 5),
-                        textAlign: TextAlign.center,
-                      ),
+                Container(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Color(0xFF1e3a5f), width: 3)),
+                  ),
+                  child: Text(
+                    'INVOICE',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1e3a5f),
+                      height: 1.0,
+                      letterSpacing: 1.5,
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(width: 4),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                const SizedBox(height: 5),
+                Row(
                   children: [
-                    const Text('INVOICE #', style: TextStyle(fontSize: 4.5, fontWeight: FontWeight.bold)),
-                    Container(
-                      width: 50,
-                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1.5),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFF999999), width: 0.5),
-                      ),
-                      child: Text(
-                        invoice.number,
-                        style: const TextStyle(fontSize: 5),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 4),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text('Customer ID', style: TextStyle(fontSize: 4.5, fontWeight: FontWeight.bold)),
-                    Container(
-                      width: 30,
-                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1.5),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFF999999), width: 0.5),
-                      ),
-                      child: Text(
-                        invoice.orderNumber ?? '-',
-                        style: const TextStyle(fontSize: 5),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                    _buildDateField('DATE:', DateFormatter.display(invoice.date), 52),
+                    const SizedBox(width: 5),
+                    _buildDateField('INVOICE #', invoice.number, 52),
+                    const SizedBox(width: 5),
+                    _buildDateField('Customer ID', invoice.orderNumber ?? '-', 32),
                   ],
                 ),
               ],
             ),
           ],
+        ),
+        const SizedBox(height: 2),
+        Container(
+          height: 1,
+          color: const Color(0xFFE0E0E0),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateField(String label, String value, double width) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 4.5,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1e3a5f),
+            letterSpacing: 0.2,
+          ),
+        ),
+        const SizedBox(height: 1),
+        Container(
+          width: width,
+          padding: const EdgeInsets.symmetric(horizontal: 3.5, vertical: 2.5),
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xFF1e3a5f), width: 1),
+            borderRadius: BorderRadius.circular(2),
+            color: const Color(0xFFFAFBFC),
+          ),
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 5,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1e3a5f),
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );
@@ -212,77 +221,89 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   Widget _buildBillingBlock(String title, InvoiceModel invoice) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          color: const Color(0xFF1e3a5f),
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-          child: Text(
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(left: BorderSide(color: const Color(0xFF1e3a5f), width: 3)),
+        color: const Color(0xFFFAFBFC),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
             title,
             style: const TextStyle(
-              color: Colors.white,
+              color: Color(0xFF1e3a5f),
               fontSize: 5,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.3,
             ),
           ),
-        ),
-        const SizedBox(height: 3),
-        Text(
-          invoice.customer.name,
-          style: const TextStyle(fontSize: 5, fontWeight: FontWeight.bold),
-        ),
-        if (invoice.customer.billingAddress != null) ...[
+          const SizedBox(height: 3),
           Text(
-            invoice.customer.billingAddress!.line1,
-            style: const TextStyle(fontSize: 4.5),
+            invoice.customer.name,
+            style: const TextStyle(fontSize: 5.5, fontWeight: FontWeight.w700, color: Color(0xFF1e3a5f)),
           ),
-          Text(
-            '${invoice.customer.billingAddress!.city}, ${invoice.customer.billingAddress!.state} ${invoice.customer.billingAddress!.pincode}',
-            style: const TextStyle(fontSize: 4.5),
-          ),
+          if (invoice.customer.billingAddress != null) ...[
+            const SizedBox(height: 1.5),
+            Text(
+              invoice.customer.billingAddress!.line1,
+              style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
+            ),
+            Text(
+              '${invoice.customer.billingAddress!.city}, ${invoice.customer.billingAddress!.state} ${invoice.customer.billingAddress!.pincode}',
+              style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555)),
+            ),
+          ],
+          if (invoice.customer.phone != null) ...[
+            const SizedBox(height: 1.5),
+            Text(
+              'Phone: ${invoice.customer.phone}',
+              style: const TextStyle(fontSize: 4.5, color: Color(0xFF666666), fontWeight: FontWeight.w500),
+            ),
+          ],
         ],
-        if (invoice.customer.phone != null)
-          Text(
-            'Phone: ${invoice.customer.phone}',
-            style: const TextStyle(fontSize: 4.5),
-          ),
-      ],
+      ),
     );
   }
 
   Widget _buildShippingBlock(String title, InvoiceModel invoice) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          color: const Color(0xFF1e3a5f),
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-          child: Text(
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(left: BorderSide(color: const Color(0xFF2d5a8c), width: 3)),
+        color: const Color(0xFFF5F8FB),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
             title,
             style: const TextStyle(
-              color: Colors.white,
+              color: Color(0xFF2d5a8c),
               fontSize: 5,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.3,
             ),
           ),
-        ),
-        const SizedBox(height: 3),
-        Text(
-          invoice.customer.name,
-          style: const TextStyle(fontSize: 5, fontWeight: FontWeight.bold),
-        ),
-        if (invoice.customer.shippingAddress != null) ...[
+          const SizedBox(height: 3),
           Text(
-            invoice.customer.shippingAddress!.line1,
-            style: const TextStyle(fontSize: 4.5),
+            invoice.customer.name,
+            style: const TextStyle(fontSize: 5.5, fontWeight: FontWeight.w700, color: Color(0xFF2d5a8c)),
           ),
-          Text(
-            '${invoice.customer.shippingAddress!.city}, ${invoice.customer.shippingAddress!.state} ${invoice.customer.shippingAddress!.pincode}',
-            style: const TextStyle(fontSize: 4.5),
-          ),
+          if (invoice.customer.shippingAddress != null) ...[
+            const SizedBox(height: 1.5),
+            Text(
+              invoice.customer.shippingAddress!.line1,
+              style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
+            ),
+            Text(
+              '${invoice.customer.shippingAddress!.city}, ${invoice.customer.shippingAddress!.state} ${invoice.customer.shippingAddress!.pincode}',
+              style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555)),
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 
@@ -290,20 +311,27 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildInfoBar(InvoiceModel invoice) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFCCCCCC), width: 1),
+        border: Border.all(color: const Color(0xFFD0D5E0), width: 1),
+        borderRadius: BorderRadius.circular(2),
       ),
       child: Column(
         children: [
           // Header row
-          Row(
-            children: [
-              _buildInfoHeader('SALESPERSON'),
-              _buildInfoHeader('P.O. #'),
-              _buildInfoHeader('SHIP DATE'),
-              _buildInfoHeader('SHIP VIA'),
-              _buildInfoHeader('F.O.B.'),
-              _buildInfoHeader('TERMS'),
-            ],
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF2C3E50),
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(1), topRight: Radius.circular(1)),
+            ),
+            child: Row(
+              children: [
+                _buildInfoHeader('SALESPERSON'),
+                _buildInfoHeader('P.O. #'),
+                _buildInfoHeader('SHIP DATE'),
+                _buildInfoHeader('SHIP VIA'),
+                _buildInfoHeader('F.O.B.'),
+                _buildInfoHeader('TERMS'),
+              ],
+            ),
           ),
           // Value row
           Row(
@@ -313,7 +341,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
               _buildInfoValue('-'),
               _buildInfoValue('-'),
               _buildInfoValue('-'),
-              _buildInfoValue(invoice.terms?.split('.')[0] ?? '-'),
+              _buildInfoValue(invoice.terms?.split('.')[0] ?? '-', isLast: true),
             ],
           ),
         ],
@@ -324,35 +352,40 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildInfoHeader(String label) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-        color: const Color(0xFF1e3a5f),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4.5),
         child: Text(
           label,
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 4.5,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.2,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildInfoValue(String value) {
+  Widget _buildInfoValue(String value, {bool isLast = false}) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-        decoration: const BoxDecoration(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        decoration: BoxDecoration(
           border: Border(
-            right: BorderSide(color: Color(0xFFCCCCCC), width: 0.5),
-            bottom: BorderSide(color: Color(0xFFCCCCCC), width: 0.5),
+            right: !isLast ? const BorderSide(color: Color(0xFFE0E5F0), width: 0.5) : BorderSide.none,
+            bottom: const BorderSide(color: Color(0xFFE0E5F0), width: 0.5),
           ),
+          color: const Color(0xFFFBFCFE),
         ),
         child: Text(
           value,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 4.5),
+          style: const TextStyle(
+            fontSize: 5,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF2C3E50),
+          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -362,85 +395,105 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
   /// Items table
   Widget _buildItemsTable(InvoiceTotals totals, String currency) {
-    return Table(
-      border: TableBorder.all(color: const Color(0xFFCCCCCC), width: 1),
-      columnWidths: const {
-        0: FractionColumnWidth(0.12),
-        1: FractionColumnWidth(0.40),
-        2: FractionColumnWidth(0.12),
-        3: FractionColumnWidth(0.18),
-        4: FractionColumnWidth(0.18),
-      },
-      children: [
-        // Header
-        TableRow(
-          decoration: const BoxDecoration(color: Color(0xFF1e3a5f)),
-          children: [
-            _buildTableHeader('ITEM #'),
-            _buildTableHeader('DESCRIPTION'),
-            _buildTableHeader('QTY'),
-            _buildTableHeader('UNIT PRICE'),
-            _buildTableHeader('TOTAL'),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFD0D5E0), width: 1),
+        borderRadius: BorderRadius.circular(2),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 2, spreadRadius: 0),
+        ],
+      ),
+      child: Table(
+        border: TableBorder(
+          horizontalInside: const BorderSide(color: Color(0xFFE8EBF0), width: 0.5),
+          verticalInside: const BorderSide(color: Color(0xFFE8EBF0), width: 0.5),
         ),
-        // Data rows
-        ...totals.lines.asMap().entries.map((entry) {
-          final isEven = entry.key % 2 == 0;
-          return TableRow(
-            decoration: BoxDecoration(
-              color: isEven ? const Color(0xFFF5F5F5) : Colors.white,
+        columnWidths: const {
+          0: FractionColumnWidth(0.12),
+          1: FractionColumnWidth(0.40),
+          2: FractionColumnWidth(0.12),
+          3: FractionColumnWidth(0.18),
+          4: FractionColumnWidth(0.18),
+        },
+        children: [
+          // Header
+          TableRow(
+            decoration: const BoxDecoration(
+              color: Color(0xFF2C3E50),
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(2), topRight: Radius.circular(2)),
             ),
             children: [
-              _buildTableCell(''),
-              _buildTableCell(entry.value.name),
-              _buildTableCell(entry.value.quantity.toStringAsFixed(2), align: TextAlign.right),
-              _buildTableCell('$currency ${entry.value.unitPrice.toStringAsFixed(2)}', align: TextAlign.right),
-              _buildTableCell('$currency ${entry.value.discountedAmount.toStringAsFixed(2)}', align: TextAlign.right),
+              _buildTableHeader('ITEM #'),
+              _buildTableHeader('DESCRIPTION'),
+              _buildTableHeader('QTY'),
+              _buildTableHeader('UNIT PRICE'),
+              _buildTableHeader('TOTAL'),
             ],
-          );
-        }),
-        // Empty rows
-        ...List.generate(5, (i) {
-          final isEven = (totals.lines.length + i) % 2 == 0;
-          return TableRow(
-            decoration: BoxDecoration(
-              color: isEven ? const Color(0xFFF5F5F5) : Colors.white,
-            ),
-            children: [
-              _buildTableCell(''),
-              _buildTableCell(''),
-              _buildTableCell(''),
-              _buildTableCell(''),
-              _buildTableCell('$currency 0.00', align: TextAlign.right),
-            ],
-          );
-        }),
-      ],
+          ),
+          // Data rows
+          ...totals.lines.asMap().entries.map((entry) {
+            final isEven = entry.key % 2 == 0;
+            return TableRow(
+              decoration: BoxDecoration(
+                color: isEven ? const Color(0xFFFBFCFE) : const Color(0xFFFFFFFF),
+              ),
+              children: [
+                _buildTableCell(''),
+                _buildTableCell(entry.value.name),
+                _buildTableCell(entry.value.quantity.toStringAsFixed(2), align: TextAlign.right),
+                _buildTableCell('$currency ${entry.value.unitPrice.toStringAsFixed(2)}', align: TextAlign.right),
+                _buildTableCell('$currency ${entry.value.discountedAmount.toStringAsFixed(2)}', align: TextAlign.right, isBold: true),
+              ],
+            );
+          }),
+          // Empty rows
+          ...List.generate(5, (i) {
+            final isEven = (totals.lines.length + i) % 2 == 0;
+            return TableRow(
+              decoration: BoxDecoration(
+                color: isEven ? const Color(0xFFFBFCFE) : const Color(0xFFFFFFFF),
+              ),
+              children: [
+                _buildTableCell(''),
+                _buildTableCell(''),
+                _buildTableCell(''),
+                _buildTableCell(''),
+                _buildTableCell('$currency 0.00', align: TextAlign.right),
+              ],
+            );
+          }),
+        ],
+      ),
     );
   }
 
   Widget _buildTableHeader(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
       child: Text(
         text,
         textAlign: TextAlign.left,
         style: const TextStyle(
           color: Colors.white,
           fontSize: 4.5,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.2,
         ),
       ),
     );
   }
 
-  Widget _buildTableCell(String text, {TextAlign align = TextAlign.left}) {
+  Widget _buildTableCell(String text, {TextAlign align = TextAlign.left, bool isBold = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3.5),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
       child: Text(
         text,
         textAlign: align,
-        style: const TextStyle(fontSize: 4.5),
+        style: TextStyle(
+          fontSize: 5,
+          fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
+          color: const Color(0xFF2C3E50),
+        ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -451,8 +504,12 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildTotalsSection(InvoiceTotals totals, InvoiceModel invoice) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFCCCCCC), width: 1),
-        color: const Color(0xFFF5F5F5),
+        border: Border.all(color: const Color(0xFFD0D5E0), width: 1),
+        borderRadius: BorderRadius.circular(2),
+        color: const Color(0xFFFBFCFE),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 2, spreadRadius: 0),
+        ],
       ),
       child: Column(
         children: [
@@ -462,8 +519,10 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           _buildTotalRow('S & H', 0, invoice.currency),
           _buildTotalRow('OTHER', invoice.otherCharges, invoice.currency),
           Container(
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Color(0xFFCCCCCC), width: 2)),
+            decoration: BoxDecoration(
+              border: const Border(top: BorderSide(color: Color(0xFF1e3a5f), width: 2.5)),
+              borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(2), bottomRight: Radius.circular(2)),
+              color: const Color(0xFF1e3a5f),
             ),
             child: _buildTotalRowBold('TOTAL', totals.grandTotal, invoice.currency),
           ),
@@ -479,20 +538,29 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFCCCCCC), width: 0.5)),
+        border: Border(bottom: BorderSide(color: Color(0xFFE8EBF0), width: 0.5)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 5.5, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 4.5, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 5,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C3E50),
+                letterSpacing: 0.2,
+              ),
             ),
             Text(
               valueStr,
-              style: const TextStyle(fontSize: 4.5, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 5,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1e3a5f),
+              ),
             ),
           ],
         ),
@@ -502,17 +570,27 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
   Widget _buildTotalRowBold(String label, double value, String currency) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 5.5, vertical: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 5.5, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 6,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 0.3,
+            ),
           ),
           Text(
             '$currency ${value.toStringAsFixed(2)}',
-            style: const TextStyle(fontSize: 5.5, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 6,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 0.2,
+            ),
           ),
         ],
       ),
@@ -527,8 +605,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFCCCCCC), width: 0.5),
-              color: const Color(0xFFF0F0F0),
+              border: Border.all(color: const Color(0xFFD0D5E0), width: 1),
+              borderRadius: BorderRadius.circular(2),
+              color: const Color(0xFFFBFCFE),
             ),
             padding: const EdgeInsets.all(5),
             child: Column(
@@ -536,23 +615,30 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
               children: [
                 const Text(
                   'Other Comments or Special Instructions',
-                  style: TextStyle(fontSize: 4.5, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 5,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1e3a5f),
+                    letterSpacing: 0.2,
+                  ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 3.5),
                 if (invoice.terms != null)
                   Text(
                     '1. ${invoice.terms!}',
-                    style: const TextStyle(fontSize: 4.25),
+                    style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                if (invoice.customerNotes != null)
+                if (invoice.customerNotes != null) ...[
+                  const SizedBox(height: 1.5),
                   Text(
                     '2. ${invoice.customerNotes!}',
-                    style: const TextStyle(fontSize: 4.25),
+                    style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
+                ],
               ],
             ),
           ),
@@ -561,16 +647,33 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFCCCCCC), width: 0.5),
+              border: Border.all(color: const Color(0xFF1e3a5f), width: 1.5),
+              borderRadius: BorderRadius.circular(2),
+              color: const Color(0xFFFAFBFC),
             ),
             padding: const EdgeInsets.all(5),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Make all checks payable to\n${invoice.company.name}',
+                  'Make all checks payable to',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 4.5, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 4.5,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2C3E50),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  invoice.company.name,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 5.5,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF1e3a5f),
+                    letterSpacing: 0.2,
+                  ),
                 ),
               ],
             ),
@@ -583,22 +686,38 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildFooterSection() {
     return Column(
       children: [
+        Container(
+          height: 1,
+          color: const Color(0xFFD0D5E0),
+          margin: const EdgeInsets.only(bottom: 5),
+        ),
         const Text(
           'If you have any questions about this invoice, please contact',
-          style: TextStyle(fontSize: 4.25, color: Color(0xFF666666)),
+          style: TextStyle(
+            fontSize: 4.5,
+            color: Color(0xFF666666),
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        const SizedBox(height: 1),
+        const SizedBox(height: 1.5),
         const Text(
           '[Name, Phone #, E-mail]',
-          style: TextStyle(fontSize: 4.25, color: Color(0xFF666666)),
+          style: TextStyle(
+            fontSize: 4.5,
+            color: Color(0xFF999999),
+            fontWeight: FontWeight.w500,
+            fontStyle: FontStyle.italic,
+          ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 4.5),
         Text(
           'Thank You For Your Business!',
           style: const TextStyle(
-            fontSize: 6,
+            fontSize: 6.5,
             fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1e3a5f),
+            letterSpacing: 0.3,
           ),
         ),
       ],
