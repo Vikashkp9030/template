@@ -88,28 +88,28 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
               Text(
                 invoice.company.name,
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 6.5,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF000000),
                 ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 1.5),
               Text(
                 invoice.company.address.line1,
-                style: const TextStyle(fontSize: 10, color: Color(0xFF333333)),
+                style: const TextStyle(fontSize: 5, color: Color(0xFF333333)),
               ),
               Text(
                 '${invoice.company.address.city}, ${invoice.company.address.state} ${invoice.company.address.pincode}',
-                style: const TextStyle(fontSize: 10, color: Color(0xFF333333)),
+                style: const TextStyle(fontSize: 5, color: Color(0xFF333333)),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 1),
               Text(
                 'Phone: ${invoice.company.phone}',
-                style: const TextStyle(fontSize: 10, color: Color(0xFF333333)),
+                style: const TextStyle(fontSize: 5, color: Color(0xFF333333)),
               ),
               Text(
                 'Email: ${invoice.company.email}',
-                style: const TextStyle(fontSize: 10, color: Color(0xFF333333)),
+                style: const TextStyle(fontSize: 5, color: Color(0xFF333333)),
               ),
             ],
           ),
@@ -122,66 +122,66 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             Text(
               'INVOICE',
               style: const TextStyle(
-                fontSize: 42,
+                fontSize: 21,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1e3a5f),
                 height: 1.0,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('DATE:', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                    const Text('DATE:', style: TextStyle(fontSize: 4.5, fontWeight: FontWeight.bold)),
                     Container(
-                      width: 100,
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      width: 50,
+                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1.5),
                       decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFF999999), width: 1),
+                        border: Border.all(color: const Color(0xFF999999), width: 0.5),
                       ),
                       child: Text(
                         DateFormatter.display(invoice.date),
-                        style: const TextStyle(fontSize: 10),
+                        style: const TextStyle(fontSize: 5),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('INVOICE #', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                    const Text('INVOICE #', style: TextStyle(fontSize: 4.5, fontWeight: FontWeight.bold)),
                     Container(
-                      width: 100,
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      width: 50,
+                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1.5),
                       decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFF999999), width: 1),
+                        border: Border.all(color: const Color(0xFF999999), width: 0.5),
                       ),
                       child: Text(
                         invoice.number,
-                        style: const TextStyle(fontSize: 10),
+                        style: const TextStyle(fontSize: 5),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('Customer ID', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                    const Text('Customer ID', style: TextStyle(fontSize: 4.5, fontWeight: FontWeight.bold)),
                     Container(
-                      width: 60,
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      width: 30,
+                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1.5),
                       decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFF999999), width: 1),
+                        border: Border.all(color: const Color(0xFF999999), width: 0.5),
                       ),
                       child: Text(
                         invoice.orderNumber ?? '-',
-                        style: const TextStyle(fontSize: 10),
+                        style: const TextStyle(fontSize: 5),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -217,35 +217,35 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
       children: [
         Container(
           color: const Color(0xFF1e3a5f),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
           child: Text(
             title,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 10,
+              fontSize: 5,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 3),
         Text(
           invoice.customer.name,
-          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 5, fontWeight: FontWeight.bold),
         ),
         if (invoice.customer.billingAddress != null) ...[
           Text(
             invoice.customer.billingAddress!.line1,
-            style: const TextStyle(fontSize: 9),
+            style: const TextStyle(fontSize: 4.5),
           ),
           Text(
             '${invoice.customer.billingAddress!.city}, ${invoice.customer.billingAddress!.state} ${invoice.customer.billingAddress!.pincode}',
-            style: const TextStyle(fontSize: 9),
+            style: const TextStyle(fontSize: 4.5),
           ),
         ],
         if (invoice.customer.phone != null)
           Text(
             'Phone: ${invoice.customer.phone}',
-            style: const TextStyle(fontSize: 9),
+            style: const TextStyle(fontSize: 4.5),
           ),
       ],
     );
@@ -257,29 +257,29 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
       children: [
         Container(
           color: const Color(0xFF1e3a5f),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
           child: Text(
             title,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 10,
+              fontSize: 5,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 3),
         Text(
           invoice.customer.name,
-          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 5, fontWeight: FontWeight.bold),
         ),
         if (invoice.customer.shippingAddress != null) ...[
           Text(
             invoice.customer.shippingAddress!.line1,
-            style: const TextStyle(fontSize: 9),
+            style: const TextStyle(fontSize: 4.5),
           ),
           Text(
             '${invoice.customer.shippingAddress!.city}, ${invoice.customer.shippingAddress!.state} ${invoice.customer.shippingAddress!.pincode}',
-            style: const TextStyle(fontSize: 9),
+            style: const TextStyle(fontSize: 4.5),
           ),
         ],
       ],
@@ -324,14 +324,14 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildInfoHeader(String label) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         color: const Color(0xFF1e3a5f),
         child: Text(
           label,
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 9,
+            fontSize: 4.5,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -342,17 +342,17 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildInfoValue(String value) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
         decoration: const BoxDecoration(
           border: Border(
-            right: BorderSide(color: Color(0xFFCCCCCC), width: 1),
-            bottom: BorderSide(color: Color(0xFFCCCCCC), width: 1),
+            right: BorderSide(color: Color(0xFFCCCCCC), width: 0.5),
+            bottom: BorderSide(color: Color(0xFFCCCCCC), width: 0.5),
           ),
         ),
         child: Text(
           value,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 9),
+          style: const TextStyle(fontSize: 4.5),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -421,13 +421,13 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
   Widget _buildTableHeader(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
       child: Text(
         text,
         textAlign: TextAlign.left,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 9,
+          fontSize: 4.5,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -436,11 +436,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
   Widget _buildTableCell(String text, {TextAlign align = TextAlign.left}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3.5),
       child: Text(
         text,
         textAlign: align,
-        style: const TextStyle(fontSize: 9),
+        style: const TextStyle(fontSize: 4.5),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -482,17 +482,17 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         border: Border(bottom: BorderSide(color: Color(0xFFCCCCCC), width: 0.5)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 4.5, fontWeight: FontWeight.w600),
             ),
             Text(
               valueStr,
-              style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 4.5, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -502,17 +502,17 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
   Widget _buildTotalRowBold(String label, double value, String currency) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 5.5, fontWeight: FontWeight.bold),
           ),
           Text(
             '$currency ${value.toStringAsFixed(2)}',
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 5.5, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -527,29 +527,29 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFCCCCCC), width: 1),
+              border: Border.all(color: const Color(0xFFCCCCCC), width: 0.5),
               color: const Color(0xFFF0F0F0),
             ),
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Other Comments or Special Instructions',
-                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 4.5, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 3),
                 if (invoice.terms != null)
                   Text(
                     '1. ${invoice.terms!}',
-                    style: const TextStyle(fontSize: 8.5),
+                    style: const TextStyle(fontSize: 4.25),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 if (invoice.customerNotes != null)
                   Text(
                     '2. ${invoice.customerNotes!}',
-                    style: const TextStyle(fontSize: 8.5),
+                    style: const TextStyle(fontSize: 4.25),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -557,20 +557,20 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 8),
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFCCCCCC), width: 1),
+              border: Border.all(color: const Color(0xFFCCCCCC), width: 0.5),
             ),
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   'Make all checks payable to\n${invoice.company.name}',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 4.5, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -585,18 +585,18 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
       children: [
         const Text(
           'If you have any questions about this invoice, please contact',
-          style: TextStyle(fontSize: 8.5, color: Color(0xFF666666)),
+          style: TextStyle(fontSize: 4.25, color: Color(0xFF666666)),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 1),
         const Text(
           '[Name, Phone #, E-mail]',
-          style: TextStyle(fontSize: 8.5, color: Color(0xFF666666)),
+          style: TextStyle(fontSize: 4.25, color: Color(0xFF666666)),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Text(
           'Thank You For Your Business!',
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 6,
             fontStyle: FontStyle.italic,
             fontWeight: FontWeight.w600,
           ),
