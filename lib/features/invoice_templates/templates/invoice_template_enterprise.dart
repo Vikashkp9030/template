@@ -31,30 +31,181 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
     required InvoiceTotals totals,
     required InvoicePaperSize paperSize,
   }) {
+    final totalLines = totals.lines.length;
+    final itemsPerPage = _calculateItemsPerPage();
+    final hasMultiplePages = totalLines > itemsPerPage;
+
     return TemplateScaffold(
       theme: theme,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Header: Company (left) + INVOICE Title (right)
-          _buildHeaderSection(invoice),
-          const SizedBox(height: 16),
+          // Page 1: Header + Billing + Info + Items
+          _buildFirstPage(invoice, totals, invoice.currency, itemsPerPage, hasMultiplePages),
 
-          // Bill To / Ship To
-          _buildBillingSection(invoice),
-          const SizedBox(height: 12),
+          // Additional pages if needed
+          if (hasMultiplePages) ...[
+            const SizedBox(height: 20),
+            ..._buildAdditionalPages(invoice, totals, invoice.currency, itemsPerPage),
+          ],
+        ],
+      ),
+    );
+  }
 
-          // Info Bar (Salesperson, P.O., etc.)
-          _buildInfoBar(invoice),
-          const SizedBox(height: 12),
+  int _calculateItemsPerPage() {
+    return 8;
+  }
 
-          // Items Table (full width)
-          Expanded(
-            child: _buildItemsTable(totals, invoice.currency),
+  Widget _buildFirstPage(
+    InvoiceModel invoice,
+    InvoiceTotals totals,
+    String currency,
+    int itemsPerPage,
+    bool hasMultiplePages,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Header: Company (left) + INVOICE Title (right)
+        _buildHeaderSection(invoice),
+        const SizedBox(height: 16),
+
+        // Bill To / Ship To
+        _buildBillingSection(invoice),
+        const SizedBox(height: 12),
+
+        // Info Bar (Salesperson, P.O., etc.)
+        _buildInfoBar(invoice),
+        const SizedBox(height: 12),
+
+        // Items Table (full width) - First page items
+        Expanded(
+          child: _buildItemsTablePaginated(
+            totals,
+            currency,
+            startIndex: 0,
+            endIndex: itemsPerPage,
+            emptyRows: hasMultiplePages ? 0 : 5,
           ),
-          const SizedBox(height: 12),
+        ),
+        const SizedBox(height: 12),
 
-          // Totals Section (right-aligned)
+        // Totals Section (right-aligned) - Only on last page
+        if (!hasMultiplePages)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: Container()),
+              SizedBox(
+                width: 200,
+                child: _buildTotalsSection(totals, invoice),
+              ),
+            ],
+          )
+        else
+          Align(
+            alignment: Alignment.centerRight,
+            child: SizedBox(
+              width: 200,
+              child: _buildTotalsSection(totals, invoice),
+            ),
+          ),
+        const SizedBox(height: 12),
+
+        // Comments + Footer - Only on last page
+        if (!hasMultiplePages) ...[
+          _buildCommentsSection(invoice),
+          const SizedBox(height: 6),
+          _buildFooterSection(),
+        ],
+      ],
+    );
+  }
+
+  List<Widget> _buildAdditionalPages(
+    InvoiceModel invoice,
+    InvoiceTotals totals,
+    String currency,
+    int itemsPerPage,
+  ) {
+    final pages = <Widget>[];
+    int pageIndex = 1;
+    int startIndex = itemsPerPage;
+
+    while (startIndex < totals.lines.length) {
+      final endIndex = (startIndex + itemsPerPage).clamp(0, totals.lines.length);
+      final isLastPage = endIndex >= totals.lines.length;
+
+      pages.add(
+        _buildContinuationPage(
+          invoice,
+          totals,
+          currency,
+          startIndex,
+          endIndex,
+          pageIndex,
+          isLastPage,
+        ),
+      );
+
+      startIndex = endIndex;
+      pageIndex++;
+    }
+
+    return pages;
+  }
+
+  Widget _buildContinuationPage(
+    InvoiceModel invoice,
+    InvoiceTotals totals,
+    String currency,
+    int startIndex,
+    int endIndex,
+    int pageNumber,
+    bool isLastPage,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Page header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${invoice.company.name} - Invoice ${invoice.number}',
+              style: const TextStyle(
+                fontSize: 5.5,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1e3a5f),
+              ),
+            ),
+            Text(
+              'Page $pageNumber',
+              style: const TextStyle(
+                fontSize: 5,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF666666),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+
+        // Items Table (full width)
+        Expanded(
+          child: _buildItemsTablePaginated(
+            totals,
+            currency,
+            startIndex: startIndex,
+            endIndex: endIndex,
+            emptyRows: isLastPage ? 0 : 5,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Totals and Footer - Only on last page
+        if (isLastPage) ...[
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -66,13 +217,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             ],
           ),
           const SizedBox(height: 12),
-
-          // Comments + Footer
           _buildCommentsSection(invoice),
           const SizedBox(height: 6),
           _buildFooterSection(),
         ],
-      ),
+      ],
     );
   }
 
@@ -394,29 +543,50 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
     );
   }
 
-  /// Items table
-  Widget _buildItemsTable(InvoiceTotals totals, String currency) {
+  /// Items table - Paginated version
+  Widget _buildItemsTablePaginated(
+    InvoiceTotals totals,
+    String currency, {
+    required int startIndex,
+    required int endIndex,
+    required int emptyRows,
+  }) {
+    final paginatedLines = totals.lines.sublist(
+      startIndex,
+      endIndex.clamp(0, totals.lines.length),
+    );
+
+    return _buildItemsTableWithLines(paginatedLines, currency, emptyRows);
+  }
+
+  /// Items table - Core implementation
+  Widget _buildItemsTableWithLines(
+    List<dynamic> lines,
+    String currency,
+    int emptyRows,
+  ) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: const Color(0xFFD0D5E0), width: 1),
         borderRadius: BorderRadius.circular(2),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 2, spreadRadius: 0),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 2, spreadRadius: 0),
         ],
       ),
-      child: Table(
-        border: TableBorder(
-          horizontalInside: const BorderSide(color: Color(0xFFE8EBF0), width: 0.5),
-          verticalInside: const BorderSide(color: Color(0xFFE8EBF0), width: 0.5),
-        ),
-        columnWidths: const {
-          0: FractionColumnWidth(0.12),
-          1: FractionColumnWidth(0.40),
-          2: FractionColumnWidth(0.12),
-          3: FractionColumnWidth(0.18),
-          4: FractionColumnWidth(0.18),
-        },
-        children: [
+      child: SingleChildScrollView(
+        child: Table(
+          border: TableBorder(
+            horizontalInside: const BorderSide(color: Color(0xFFE8EBF0), width: 0.5),
+            verticalInside: const BorderSide(color: Color(0xFFE8EBF0), width: 0.5),
+          ),
+          columnWidths: const {
+            0: FractionColumnWidth(0.12),
+            1: FractionColumnWidth(0.40),
+            2: FractionColumnWidth(0.12),
+            3: FractionColumnWidth(0.18),
+            4: FractionColumnWidth(0.18),
+          },
+          children: [
           // Header
           TableRow(
             decoration: const BoxDecoration(
@@ -432,7 +602,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             ],
           ),
           // Data rows
-          ...totals.lines.asMap().entries.map((entry) {
+          ...lines.asMap().entries.map((entry) {
             final isEven = entry.key % 2 == 0;
             return TableRow(
               decoration: BoxDecoration(
@@ -448,8 +618,8 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             );
           }),
           // Empty rows
-          ...List.generate(5, (i) {
-            final isEven = (totals.lines.length + i) % 2 == 0;
+          ...List.generate(emptyRows, (i) {
+            final isEven = (lines.length + i) % 2 == 0;
             return TableRow(
               decoration: BoxDecoration(
                 color: isEven ? const Color(0xFFFBFCFE) : const Color(0xFFFFFFFF),
@@ -464,9 +634,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             );
           }),
         ],
+        ),
       ),
     );
   }
+
 
   Widget _buildTableHeader(String text) {
     return Padding(
@@ -509,7 +681,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         borderRadius: BorderRadius.circular(2),
         color: const Color(0xFFFBFCFE),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 2, spreadRadius: 0),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 2, spreadRadius: 0),
         ],
       ),
       child: Column(
