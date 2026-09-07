@@ -8,13 +8,22 @@ import 'package:printing/printing.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/extensions/context_ext.dart';
+import '../../models/invoice/invoice_model.dart';
 import '../../models/printer/paper_size.dart';
 import '../../widgets/invoice_preview_container.dart';
 import '../../widgets/template_selector.dart';
 import '../invoice_templates/invoice_template_type.dart';
 import '../invoice_templates/presentation/invoice_preview.dart';
+import '../printing/pdf_service.dart';
 import '../printing/print_service.dart';
 import 'preview_controller.dart';
+
+/// The authoritative on-screen preview is the actual generated PDF
+/// ([_PreviewMode.pdf]) — byte-identical to what "Download PDF" produces,
+/// so it can never disagree with it. [_PreviewMode.liveTemplate] shows the
+/// fast Flutter-widget render (the same one other apps embed via the public
+/// `InvoicePreview` API) side by side, for template-design QA.
+enum _PreviewMode { pdf, liveTemplate }
 
 class InvoicePreviewPage extends ConsumerStatefulWidget {
   const InvoicePreviewPage({
@@ -31,6 +40,9 @@ class InvoicePreviewPage extends ConsumerStatefulWidget {
 }
 
 class _InvoicePreviewPageState extends ConsumerState<InvoicePreviewPage> {
+  _PreviewMode _mode = _PreviewMode.pdf;
+  final _pdfService = PdfService();
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +61,8 @@ class _InvoicePreviewPageState extends ConsumerState<InvoicePreviewPage> {
     final controls = _Controls(
       template: state.invoiceTemplate,
       paperSize: state.paperSize,
+      mode: _mode,
+      onModeChanged: (mode) => setState(() => _mode = mode),
       onTemplate: (type) =>
           ref.read(previewProvider.notifier).selectInvoiceTemplate(type),
       onPaper: (size) => ref.read(previewProvider.notifier).setPaperSize(size),
@@ -57,14 +71,21 @@ class _InvoicePreviewPageState extends ConsumerState<InvoicePreviewPage> {
       onPrint: () => _print(),
       onShare: () => _share(),
     );
-    final preview = InvoicePreviewContainer(
-      paperSize: state.paperSize,
-      child: InvoicePreview(
-        invoice: state.invoice,
-        template: state.invoiceTemplate,
-        paperSize: state.paperSize,
-      ),
-    );
+    final preview = _mode == _PreviewMode.pdf
+        ? _PdfPreviewPane(
+            pdfService: _pdfService,
+            invoice: state.invoice,
+            template: state.invoiceTemplate,
+            paperSize: state.paperSize,
+          )
+        : InvoicePreviewContainer(
+            paperSize: state.paperSize,
+            child: InvoicePreview(
+              invoice: state.invoice,
+              template: state.invoiceTemplate,
+              paperSize: state.paperSize,
+            ),
+          );
 
     return Scaffold(
       appBar: AppBar(
@@ -167,6 +188,8 @@ class _Controls extends StatelessWidget {
   const _Controls({
     required this.template,
     required this.paperSize,
+    required this.mode,
+    required this.onModeChanged,
     required this.onTemplate,
     required this.onPaper,
     required this.onPdf,
@@ -177,6 +200,8 @@ class _Controls extends StatelessWidget {
 
   final InvoiceTemplateType template;
   final InvoicePaperSize paperSize;
+  final _PreviewMode mode;
+  final ValueChanged<_PreviewMode> onModeChanged;
   final ValueChanged<InvoiceTemplateType> onTemplate;
   final ValueChanged<InvoicePaperSize> onPaper;
   final VoidCallback onPdf;
@@ -189,6 +214,25 @@ class _Controls extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.md),
       children: [
+        Text('Preview', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 8),
+        SegmentedButton<_PreviewMode>(
+          segments: const [
+            ButtonSegment(
+              value: _PreviewMode.pdf,
+              label: Text('PDF Preview'),
+              icon: Icon(Icons.picture_as_pdf_outlined),
+            ),
+            ButtonSegment(
+              value: _PreviewMode.liveTemplate,
+              label: Text('Live Template'),
+              icon: Icon(Icons.dashboard_customize_outlined),
+            ),
+          ],
+          selected: {mode},
+          onSelectionChanged: (next) => onModeChanged(next.first),
+        ),
+        const SizedBox(height: AppSpacing.md),
         TemplateSelector.invoice(value: template, onChanged: onTemplate),
         const SizedBox(height: AppSpacing.md),
         Text('Paper Size', style: Theme.of(context).textTheme.titleSmall),
@@ -232,6 +276,41 @@ class _Controls extends StatelessWidget {
           label: const Text('Share'),
         ),
       ],
+    );
+  }
+}
+
+/// Inline, live-updating render of the exact PDF `PdfService` produces.
+/// Rebuilding with a new `build` closure (which happens on every widget
+/// rebuild, since it captures `invoice`/`template`/`paperSize`) makes
+/// `PdfPreview` regenerate automatically — see its `didUpdateWidget`.
+class _PdfPreviewPane extends StatelessWidget {
+  const _PdfPreviewPane({
+    required this.pdfService,
+    required this.invoice,
+    required this.template,
+    required this.paperSize,
+  });
+
+  final PdfService pdfService;
+  final InvoiceModel invoice;
+  final InvoiceTemplateType template;
+  final InvoicePaperSize paperSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return PdfPreview(
+      canChangePageFormat: false,
+      canChangeOrientation: false,
+      canDebug: false,
+      useActions: false,
+      build: (_) async => Uint8List.fromList(
+        await pdfService.generateInvoice(
+          invoice: invoice,
+          template: template,
+          paperSize: paperSize,
+        ),
+      ),
     );
   }
 }

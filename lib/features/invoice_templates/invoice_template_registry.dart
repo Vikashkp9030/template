@@ -1,7 +1,7 @@
 import 'invoice_template.dart';
 import 'invoice_template_type.dart';
 import 'templates/invoice_template_basic.dart';
-import 'templates/invoice_template_standard.dart';
+import 'templates/invoice_template_enterprise.dart';
 import 'templates/invoice_template_premium.dart';
 
 class InvoiceTemplateRegistry {
@@ -9,7 +9,7 @@ class InvoiceTemplateRegistry {
 
   static final Map<InvoiceTemplateType, InvoiceTemplate> templates = {
     InvoiceTemplateType.basic: BasicInvoiceTemplate(),
-    InvoiceTemplateType.standard: StandardInvoiceTemplate(),
+    InvoiceTemplateType.standard: EnterpriseInvoiceTemplate(),
     InvoiceTemplateType.premium: PremiumInvoiceTemplate(),
   };
 

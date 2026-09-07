@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const seed = Color(0xFF0F766E);
 
-  // Invoice Template Colors
-  static const basicAccent = Color(0xFF374151); // Slate 700
-  static const standardAccent = Color(0xFF2563EB); // Blue 600
-  static const premiumAccent = Color(0xFF6366F1); // Indigo 500
-  
+  // Invoice template colors live in InvoiceTemplateThemes
+  // (lib/features/invoice_templates/theme/invoice_template_theme.dart) —
+  // the single source of truth shared by the Flutter and PDF renderers.
+
   // Thermal Template Colors
   static const thermalAccent = Color(0xFF000000);
 

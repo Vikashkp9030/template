@@ -80,6 +80,8 @@ class AmountLine extends StatelessWidget {
     required this.value,
     required this.currency,
     this.emphasis = false,
+    this.labelStyle,
+    this.valueStyle,
   });
 
   final String label;
@@ -87,9 +89,15 @@ class AmountLine extends StatelessWidget {
   final String currency;
   final bool emphasis;
 
+  /// Optional style overrides so callers driven by a design-token theme
+  /// (see `InvoiceTemplateTheme`) can render this row without fighting the
+  /// widget's own defaults, while non-themed callers keep the defaults.
+  final TextStyle? labelStyle;
+  final TextStyle? valueStyle;
+
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(
+    final defaultStyle = TextStyle(
       fontWeight: emphasis ? FontWeight.w800 : FontWeight.w500,
       fontSize: emphasis ? 16 : 12,
     );
@@ -97,8 +105,11 @@ class AmountLine extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: style)),
-          Text(MoneyFormatter.format(value, currency: currency), style: style),
+          Expanded(child: Text(label, style: labelStyle ?? defaultStyle)),
+          Text(
+            MoneyFormatter.format(value, currency: currency),
+            style: valueStyle ?? defaultStyle,
+          ),
         ],
       ),
     );
