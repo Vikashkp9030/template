@@ -37,11 +37,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildHeader(invoice),
-          const SizedBox(height: 30),
+          const SizedBox(height: 12),
           _buildBillingSection(invoice),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
           _buildInfoBar(invoice),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,24 +49,17 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
                 Expanded(
                   child: _buildItemsTable(totals, invoice.currency),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 12),
                 SizedBox(
-                  width: 220,
+                  width: 160,
                   child: _buildTotalsBox(totals, invoice.currency, invoice),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _buildCommentsBox(invoice),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 6),
+          _buildCommentsBox(invoice),
+          const SizedBox(height: 6),
           _buildFooter(invoice),
         ],
       ),
@@ -83,17 +76,17 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             children: [
               Text(
                 invoice.company.name,
-                style: theme.type.bodyStrong.flutter.copyWith(fontSize: 13),
+                style: theme.type.bodyStrong.flutter.copyWith(fontSize: 11, fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 invoice.company.address.singleLine,
-                style: theme.type.body.flutter.copyWith(fontSize: 11),
+                style: theme.type.body.flutter.copyWith(fontSize: 9),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 3),
               Text(
-                'Phone: ${invoice.company.phone}',
-                style: theme.type.body.flutter.copyWith(fontSize: 11),
+                'Ph: ${invoice.company.phone}',
+                style: theme.type.body.flutter.copyWith(fontSize: 9),
               ),
             ],
           ),
@@ -103,11 +96,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           children: [
             Text(
               'INVOICE',
-              style: theme.type.documentTitle.flutter,
+              style: theme.type.documentTitle.flutter.copyWith(fontSize: 28),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 6),
             _buildMetaBox('DATE:', DateFormatter.display(invoice.date)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             _buildMetaBox('INVOICE #', invoice.number),
           ],
         ),
@@ -119,16 +112,16 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(label, style: theme.type.body.flutter.copyWith(fontSize: 11, fontWeight: FontWeight.bold)),
+        Text(label, style: theme.type.body.flutter.copyWith(fontSize: 8, fontWeight: FontWeight.bold)),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFF999999), width: 1),
+            border: Border.all(color: const Color(0xFF999999), width: 0.8),
             color: Colors.white,
           ),
           child: Text(
             value,
-            style: theme.type.body.flutter.copyWith(fontSize: 11),
+            style: theme.type.body.flutter.copyWith(fontSize: 9),
           ),
         ),
       ],
@@ -168,17 +161,17 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           color: Color(theme.accent),
           child: Text(
             title,
-            style: theme.type.sectionLabel.flutter,
+            style: theme.type.sectionLabel.flutter.copyWith(fontSize: 8),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         ...lines.map((line) => Padding(
-          padding: const EdgeInsets.only(bottom: 2),
-          child: Text(line, style: theme.type.body.flutter.copyWith(fontSize: 11)),
+          padding: const EdgeInsets.only(bottom: 1.5),
+          child: Text(line, style: theme.type.body.flutter.copyWith(fontSize: 9)),
         )),
       ],
     );
@@ -217,15 +210,15 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildInfoCell(String label) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         decoration: BoxDecoration(
           color: Color(theme.accent),
-          border: Border(right: BorderSide(color: Color(theme.divider))),
+          border: Border(right: BorderSide(color: Color(theme.divider), width: 0.5)),
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: theme.type.tableHeader.flutter,
+          style: theme.type.tableHeader.flutter.copyWith(fontSize: 7.5),
         ),
       ),
     );
@@ -234,14 +227,16 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildInfoValue(String value) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         decoration: BoxDecoration(
-          border: Border(right: BorderSide(color: Color(theme.divider))),
+          border: Border(right: BorderSide(color: Color(theme.divider), width: 0.5)),
         ),
         child: Text(
           value,
           textAlign: TextAlign.center,
-          style: theme.type.body.flutter.copyWith(fontSize: 10),
+          style: theme.type.body.flutter.copyWith(fontSize: 8),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
@@ -284,11 +279,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             ],
           );
         }),
-        // Add empty rows to match reference height
-        ...List.generate(8, (i) => TableRow(
+        // Add minimal empty rows
+        ...List.generate(3, (i) => TableRow(
           decoration: BoxDecoration(
             color: ((totals.lines.length + i) % 2 == 0) ? Color(theme.surfaceMuted) : Colors.white,
-            border: Border(bottom: BorderSide(color: Color(theme.divider))),
+            border: Border(bottom: BorderSide(color: Color(theme.divider), width: 0.5)),
           ),
           children: [
             _buildTableCell(''),
@@ -304,22 +299,24 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
   Widget _buildTableHeaderCell(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Text(
         text,
         textAlign: TextAlign.left,
-        style: theme.type.tableHeader.flutter,
+        style: theme.type.tableHeader.flutter.copyWith(fontSize: 8),
       ),
     );
   }
 
   Widget _buildTableCell(String text, {TextAlign align = TextAlign.left}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
       child: Text(
         text,
         textAlign: align,
-        style: theme.type.tableCell.flutter,
+        style: theme.type.tableCell.flutter.copyWith(fontSize: 8.5),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -349,37 +346,37 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   Widget _buildTotalRow(String label, String value, {bool isTotal = false, bool isPaid = false, bool isBalance = false}) {
-    TextStyle labelStyle = theme.type.totalLabel.flutter.copyWith(fontSize: 11);
-    TextStyle valueStyle = theme.type.totalValue.flutter.copyWith(fontSize: 11);
+    TextStyle labelStyle = theme.type.totalLabel.flutter.copyWith(fontSize: 8.5);
+    TextStyle valueStyle = theme.type.totalValue.flutter.copyWith(fontSize: 8.5);
     Color? bgColor;
 
     if (isTotal) {
-      labelStyle = theme.type.grandTotalLabel.flutter.copyWith(fontSize: 11);
-      valueStyle = theme.type.grandTotalValue.flutter.copyWith(fontSize: 11);
+      labelStyle = theme.type.grandTotalLabel.flutter.copyWith(fontSize: 9);
+      valueStyle = theme.type.grandTotalValue.flutter.copyWith(fontSize: 9, fontWeight: FontWeight.bold);
       bgColor = const Color(0xFFE8E8E8);
     } else if (isPaid) {
-      labelStyle = labelStyle.copyWith(color: const Color(0xFF2E7D32));
-      valueStyle = valueStyle.copyWith(color: const Color(0xFF2E7D32));
+      labelStyle = labelStyle.copyWith(color: const Color(0xFF2E7D32), fontSize: 8);
+      valueStyle = valueStyle.copyWith(color: const Color(0xFF2E7D32), fontSize: 8);
     } else if (isBalance) {
-      labelStyle = labelStyle.copyWith(color: const Color(0xFFC62828), fontWeight: FontWeight.bold);
-      valueStyle = valueStyle.copyWith(color: const Color(0xFFC62828), fontWeight: FontWeight.bold);
+      labelStyle = labelStyle.copyWith(color: const Color(0xFFC62828), fontWeight: FontWeight.bold, fontSize: 8.5);
+      valueStyle = valueStyle.copyWith(color: const Color(0xFFC62828), fontWeight: FontWeight.bold, fontSize: 8.5);
     }
 
     return Container(
       decoration: BoxDecoration(
         color: bgColor,
-        border: Border(bottom: BorderSide(color: Color(theme.divider))),
+        border: Border(bottom: BorderSide(color: Color(theme.divider), width: 0.5)),
       ),
       child: Row(
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
               child: Text(label, style: labelStyle),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             child: Text(value, textAlign: TextAlign.right, style: valueStyle),
           ),
         ],
@@ -390,46 +387,52 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   Widget _buildCommentsBox(InvoiceModel invoice) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Color(theme.divider)),
+        border: Border.all(color: Color(theme.divider), width: 0.8),
         color: Color(0xFFF0F0F0),
       ),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (invoice.terms != null) ...[
             Text(
               'Terms & Conditions',
-              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 8.5),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 1),
             Text(
               invoice.terms!,
-              style: theme.type.body.flutter.copyWith(fontSize: 10),
+              style: theme.type.body.flutter.copyWith(fontSize: 8),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
           ],
           if (invoice.notes != null) ...[
             Text(
               'Notes',
-              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 8.5),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 1),
             Text(
               invoice.notes!,
-              style: theme.type.body.flutter.copyWith(fontSize: 10),
+              style: theme.type.body.flutter.copyWith(fontSize: 8),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
           ],
           if (invoice.customerNotes != null) ...[
             Text(
               'Special Instructions',
-              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+              style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 8.5),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 1),
             Text(
               invoice.customerNotes!,
-              style: theme.type.body.flutter.copyWith(fontSize: 10, fontStyle: FontStyle.italic),
+              style: theme.type.body.flutter.copyWith(fontSize: 8, fontStyle: FontStyle.italic),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ],
@@ -442,9 +445,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
       children: [
         if (invoice.bank != null) ...[
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              border: Border.all(color: Color(theme.divider)),
+              border: Border.all(color: Color(theme.divider), width: 0.8),
               color: Color(theme.surfaceMuted),
             ),
             child: Row(
@@ -453,18 +456,17 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Bank Details', style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 10)),
-                    const SizedBox(height: 4),
-                    Text('${invoice.bank!.bankName} • ${invoice.bank!.accountNumber}', style: theme.type.body.flutter.copyWith(fontSize: 9)),
+                    Text('Bank:', style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 8)),
+                    Text('${invoice.bank!.bankName} • Acc: ${invoice.bank!.accountNumber}', style: theme.type.body.flutter.copyWith(fontSize: 7.5)),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('Authorized Signature', style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 10)),
-                    const SizedBox(height: 20),
-                    SizedBox(width: 80, child: Container(
-                      height: 1,
+                    Text('Authorized Signature', style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 8)),
+                    const SizedBox(height: 10),
+                    SizedBox(width: 60, child: Container(
+                      height: 0.8,
                       color: const Color(0xFF333333),
                     )),
                   ],
@@ -472,11 +474,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 3),
         ],
         Text(
           'Thank You For Your Business!',
-          style: theme.type.footer.flutter.copyWith(fontStyle: FontStyle.italic, fontSize: 12),
+          style: theme.type.footer.flutter.copyWith(fontStyle: FontStyle.italic, fontSize: 9),
         ),
       ],
     );
