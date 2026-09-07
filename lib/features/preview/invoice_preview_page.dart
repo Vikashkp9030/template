@@ -1,281 +1,226 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:printing/printing.dart';
 
-import '../../core/constants/app_spacing.dart';
-import '../../core/errors/app_exception.dart';
-import '../../core/extensions/context_ext.dart';
+import '../../data/dummy/dummy_invoice_data.dart';
 import '../../models/invoice/invoice_model.dart';
 import '../../models/printer/paper_size.dart';
-import '../../widgets/invoice_preview_container.dart';
-import '../../widgets/template_selector.dart';
 import '../invoice_templates/invoice_template_type.dart';
 import '../invoice_templates/presentation/invoice_preview.dart';
 import '../printing/pdf_service.dart';
-import '../printing/print_service.dart';
-import 'preview_controller.dart';
 
 /// The authoritative on-screen preview is the actual generated PDF
 /// ([_PreviewMode.pdf]) — byte-identical to what "Download PDF" produces,
-/// so it can never disagree with it. [_PreviewMode.liveTemplate] shows the
-/// fast Flutter-widget render (the same one other apps embed via the public
-/// `InvoicePreview` API) side by side, for template-design QA.
+/// so it can never disagree with it, and it's the default view. Switching to
+/// [_PreviewMode.liveTemplate] shows the fast Flutter-widget render instead,
+/// for template-design QA.
 enum _PreviewMode { pdf, liveTemplate }
 
-class InvoicePreviewPage extends ConsumerStatefulWidget {
-  const InvoicePreviewPage({
-    super.key,
-    this.initialTemplate,
-    this.loadErp = false,
-  });
+class InvoicePreviewPage extends StatefulWidget {
+  const InvoicePreviewPage({super.key, this.initialTemplate});
 
   final InvoiceTemplateType? initialTemplate;
-  final bool loadErp;
 
   @override
-  ConsumerState<InvoicePreviewPage> createState() => _InvoicePreviewPageState();
+  State<InvoicePreviewPage> createState() => _InvoicePreviewPageState();
 }
 
-class _InvoicePreviewPageState extends ConsumerState<InvoicePreviewPage> {
+class _InvoicePreviewPageState extends State<InvoicePreviewPage> {
   _PreviewMode _mode = _PreviewMode.pdf;
   final _pdfService = PdfService();
+  late InvoiceModel _invoice;
+  late InvoiceTemplateType _template;
+  InvoicePaperSize _paperSize = InvoicePaperSize.a4;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller = ref.read(previewProvider.notifier);
-      if (widget.loadErp) controller.loadErpInvoice();
-      if (widget.initialTemplate != null) {
-        controller.selectInvoiceTemplate(widget.initialTemplate!);
-      }
-    });
+    _invoice = DummyInvoiceData.invoice();
+    _template = widget.initialTemplate ?? InvoiceTemplateType.standard;
+  }
+
+  Future<void> _downloadPdf() async {
+    final bytes = Uint8List.fromList(
+      await _pdfService.generateInvoice(
+        invoice: _invoice,
+        template: _template,
+        paperSize: _paperSize,
+      ),
+    );
+    await Printing.sharePdf(
+      bytes: bytes,
+      filename: 'invoice_${_invoice.number}.pdf',
+    );
+  }
+
+  Future<void> _printPdf() async {
+    await Printing.layoutPdf(
+      onLayout: (_) async => Uint8List.fromList(
+        await _pdfService.generateInvoice(
+          invoice: _invoice,
+          template: _template,
+          paperSize: _paperSize,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(previewProvider);
-    final controls = _Controls(
-      template: state.invoiceTemplate,
-      paperSize: state.paperSize,
-      mode: _mode,
-      onModeChanged: (mode) => setState(() => _mode = mode),
-      onTemplate: (type) =>
-          ref.read(previewProvider.notifier).selectInvoiceTemplate(type),
-      onPaper: (size) => ref.read(previewProvider.notifier).setPaperSize(size),
-      onPdf: () => _pdf(preview: false),
-      onPreviewPdf: () => _pdf(preview: true),
-      onPrint: () => _print(),
-      onShare: () => _share(),
-    );
-    final preview = _mode == _PreviewMode.pdf
-        ? _PdfPreviewPane(
-            pdfService: _pdfService,
-            invoice: state.invoice,
-            template: state.invoiceTemplate,
-            paperSize: state.paperSize,
-          )
-        : InvoicePreviewContainer(
-            paperSize: state.paperSize,
-            child: InvoicePreview(
-              invoice: state.invoice,
-              template: state.invoiceTemplate,
-              paperSize: state.paperSize,
-            ),
-          );
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Template: ${state.invoiceTemplate.title}'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
-        ),
+        title: Text('Invoice Preview — ${_template.shortLabel}'),
       ),
-      body: Column(
+      body: Row(
         children: [
-          if (state.errorMessage != null)
-            MaterialBanner(
-              content: Text(state.errorMessage!),
-              actions: [
-                TextButton(
-                  onPressed: () =>
-                      ref.read(previewProvider.notifier).loadDummyInvoice(),
-                  child: const Text('Dismiss'),
-                ),
-              ],
-            ),
           Expanded(
-            child: context.isWide
-                ? Row(
-                    children: [
-                      SizedBox(width: 320, child: controls),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          child: preview,
-                        ),
-                      ),
-                    ],
-                  )
-                : ListView(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    children: [
-                      controls,
-                      const SizedBox(height: 16),
-                      SizedBox(height: 720, child: preview),
-                    ],
+            child: switch (_mode) {
+              _PreviewMode.pdf => _PdfPreviewPane(
+                pdfService: _pdfService,
+                invoice: _invoice,
+                template: _template,
+                paperSize: _paperSize,
+              ),
+              // `constrained: false` lets the page column take its natural
+              // size and be panned, instead of being squeezed into the
+              // viewport height.
+              _PreviewMode.liveTemplate => InteractiveViewer(
+                constrained: false,
+                minScale: 0.3,
+                maxScale: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: InvoicePreview(
+                    invoice: _invoice,
+                    template: _template,
+                    paperSize: _paperSize,
                   ),
+                ),
+              ),
+            },
+          ),
+          SizedBox(
+            width: 260,
+            child: _ControlPanel(
+              mode: _mode,
+              onModeChanged: (next) => setState(() => _mode = next),
+              template: _template,
+              onTemplate: (next) => setState(() => _template = next),
+              paperSize: _paperSize,
+              onPaper: (next) => setState(() => _paperSize = next),
+              onPdf: _downloadPdf,
+              onPrint: _printPdf,
+            ),
           ),
         ],
       ),
     );
   }
-
-  Future<void> _pdf({required bool preview}) async {
-    final state = ref.read(previewProvider);
-    try {
-      final bytes = await InvoicePrintService().generatePdf(
-        invoice: state.invoice,
-        template: state.invoiceTemplate,
-        paperSize: state.paperSize,
-      );
-      if (!mounted) return;
-      if (preview) {
-        await Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => Scaffold(
-              appBar: AppBar(title: const Text('PDF preview')),
-              body: PdfPreview(build: (_) async => Uint8List.fromList(bytes)),
-            ),
-          ),
-        );
-      } else {
-        await Printing.sharePdf(
-          bytes: Uint8List.fromList(bytes),
-          filename: '${state.invoice.number}.pdf',
-        );
-      }
-    } on AppException catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error.message)));
-    }
-  }
-
-  Future<void> _print() async {
-    final state = ref.read(previewProvider);
-    try {
-      await InvoicePrintService.printInvoice(
-        invoice: state.invoice,
-        template: state.invoiceTemplate,
-        paperSize: state.paperSize,
-      );
-    } on AppException catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error.message)));
-    }
-  }
-
-  Future<void> _share() => _pdf(preview: false);
 }
 
-class _Controls extends StatelessWidget {
-  const _Controls({
-    required this.template,
-    required this.paperSize,
+class _ControlPanel extends StatelessWidget {
+  const _ControlPanel({
     required this.mode,
     required this.onModeChanged,
+    required this.template,
     required this.onTemplate,
+    required this.paperSize,
     required this.onPaper,
     required this.onPdf,
-    required this.onPreviewPdf,
     required this.onPrint,
-    required this.onShare,
   });
 
-  final InvoiceTemplateType template;
-  final InvoicePaperSize paperSize;
   final _PreviewMode mode;
   final ValueChanged<_PreviewMode> onModeChanged;
+  final InvoiceTemplateType template;
   final ValueChanged<InvoiceTemplateType> onTemplate;
+  final InvoicePaperSize paperSize;
   final ValueChanged<InvoicePaperSize> onPaper;
   final VoidCallback onPdf;
-  final VoidCallback onPreviewPdf;
   final VoidCallback onPrint;
-  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      children: [
-        Text('Preview', style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: 8),
-        SegmentedButton<_PreviewMode>(
-          segments: const [
-            ButtonSegment(
-              value: _PreviewMode.pdf,
-              label: Text('PDF Preview'),
-              icon: Icon(Icons.picture_as_pdf_outlined),
+    return Material(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ListView(
+          children: [
+            Text('Preview', style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            SegmentedButton<_PreviewMode>(
+              segments: const [
+                ButtonSegment(
+                  value: _PreviewMode.pdf,
+                  label: Text('PDF Preview'),
+                  icon: Icon(Icons.picture_as_pdf_outlined),
+                ),
+                ButtonSegment(
+                  value: _PreviewMode.liveTemplate,
+                  label: Text('Live Template'),
+                  icon: Icon(Icons.dashboard_customize_outlined),
+                ),
+              ],
+              selected: {mode},
+              onSelectionChanged: (next) => onModeChanged(next.first),
             ),
-            ButtonSegment(
-              value: _PreviewMode.liveTemplate,
-              label: Text('Live Template'),
-              icon: Icon(Icons.dashboard_customize_outlined),
+            const SizedBox(height: 16),
+            Text('Template', style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            RadioGroup<InvoiceTemplateType>(
+              groupValue: template,
+              onChanged: (next) {
+                if (next != null) onTemplate(next);
+              },
+              child: Column(
+                children: [
+                  for (final type in InvoiceTemplateType.values)
+                    RadioListTile<InvoiceTemplateType>(
+                      title: Text(type.shortLabel),
+                      subtitle: Text(
+                        type.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      value: type,
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text('Paper Size', style: Theme.of(context).textTheme.titleSmall),
+            RadioGroup<InvoicePaperSize>(
+              groupValue: paperSize,
+              onChanged: (next) {
+                if (next != null) onPaper(next);
+              },
+              child: Column(
+                children: [
+                  for (final size in InvoicePaperSize.values)
+                    RadioListTile<InvoicePaperSize>(
+                      title: Text(size.label),
+                      value: size,
+                    ),
+                ],
+              ),
+            ),
+            const Divider(),
+            FilledButton.icon(
+              onPressed: onPdf,
+              icon: const Icon(Icons.picture_as_pdf_outlined),
+              label: const Text('Download PDF'),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: onPrint,
+              icon: const Icon(Icons.print_outlined),
+              label: const Text('Print PDF'),
             ),
           ],
-          selected: {mode},
-          onSelectionChanged: (next) => onModeChanged(next.first),
         ),
-        const SizedBox(height: AppSpacing.md),
-        TemplateSelector.invoice(value: template, onChanged: onTemplate),
-        const SizedBox(height: AppSpacing.md),
-        Text('Paper Size', style: Theme.of(context).textTheme.titleSmall),
-        RadioGroup<InvoicePaperSize>(
-          groupValue: paperSize,
-          onChanged: (next) {
-            if (next != null) onPaper(next);
-          },
-          child: Column(
-            children: [
-              for (final size in InvoicePaperSize.values)
-                RadioListTile<InvoicePaperSize>(
-                  title: Text(size.label),
-                  value: size,
-                ),
-            ],
-          ),
-        ),
-        const Divider(),
-        FilledButton.icon(
-          onPressed: onPdf,
-          icon: const Icon(Icons.picture_as_pdf_outlined),
-          label: const Text('Download PDF'),
-        ),
-        const SizedBox(height: 8),
-        FilledButton.tonalIcon(
-          onPressed: onPreviewPdf,
-          icon: const Icon(Icons.visibility_outlined),
-          label: const Text('Preview PDF'),
-        ),
-        const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: onPrint,
-          icon: const Icon(Icons.print_outlined),
-          label: const Text('Print PDF'),
-        ),
-        const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: onShare,
-          icon: const Icon(Icons.share_outlined),
-          label: const Text('Share'),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -303,7 +248,6 @@ class _PdfPreviewPane extends StatelessWidget {
       canChangePageFormat: false,
       canChangeOrientation: false,
       canDebug: false,
-      useActions: false,
       build: (_) async => Uint8List.fromList(
         await pdfService.generateInvoice(
           invoice: invoice,

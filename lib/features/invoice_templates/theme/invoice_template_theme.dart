@@ -102,10 +102,9 @@ class InvoiceTableStyle {
   final bool headerBorderOnly;
 }
 
-/// Single source of truth for one template's look. Both the Flutter widget
-/// renderer and the PDF renderer read the same instance (via
-/// [invoice_template_theme_pdf_x.dart] for the PDF side) so colors, spacing,
-/// and typography can't drift between Preview and PDF.
+/// Single source of truth for one template's look: colors, spacing, and
+/// typography. The PDF is rasterized from these same widgets, so Preview and
+/// PDF read this one instance and cannot drift.
 class InvoiceTemplateTheme {
   const InvoiceTemplateTheme({
     required this.pageMargin,

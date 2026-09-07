@@ -17,27 +17,32 @@ Register new templates in `InvoiceTemplateRegistry`.
 
 ## Single source of truth
 
-Every template's colors, spacing, and typography come from one place:
-`lib/features/invoice_templates/theme/invoice_template_theme.dart` defines
-`InvoiceTemplateThemes.basic/enterprise/premium`. Both renderers read the same theme instance:
+There is exactly one layout implementation per template. Each template implements
+`InvoiceTemplate.buildPages()`, returning one widget per printed page, each sized to fill the
+selected `InvoicePaperSize`. Both outputs consume that same list:
 
-- The Flutter widget templates (`lib/features/invoice_templates/templates/*.dart`), composed
-  from shared section widgets in `lib/features/invoice_templates/widgets/` (header, party info,
-  items table, totals, notes/terms, signature, footer).
-- The PDF renderer (`lib/features/printing/pdf_service.dart`), via the `pw`-style mapping
-  extensions in `invoice_template_theme_pdf_x.dart`.
+- **On screen** — `InvoiceTemplate.build()` (the default in the base class) stacks the pages
+  with a gap between them.
+- **In the PDF** — `PdfService.generateInvoice()` rasterizes each page widget through
+  `WidgetRasterizer` (`lib/features/printing/widget_rasterizer.dart`) and places the resulting
+  image on a PDF page.
 
-`Widget` (Flutter) and `pw.Widget` (the `pdf` package) are different widget systems and can't
-literally share render code, but sharing the token values means a color or spacing change only
-needs to happen once, and the two can't silently drift the way hand-duplicated hex/px values
-used to.
+Colors, spacing, and typography still come from
+`lib/features/invoice_templates/theme/invoice_template_theme.dart`
+(`InvoiceTemplateThemes.basic/enterprise/premium`).
+
+Because the PDF is a render of the same widgets, the two cannot drift: a template change shows
+up in both, and there is no second `pw.Widget` tree to keep in sync. The tradeoff is that PDF
+text is rasterized rather than selectable.
+
+`WidgetRasterizer` builds the page in its own `PipelineOwner`/`BuildOwner`, so it does not need
+the widget to be mounted in the running app.
 
 ## Preview vs. PDF
 
 `InvoicePreviewPage` shows two interchangeable views of the same data:
 
 - **PDF Preview** (default) — the actual bytes `PdfService.generateInvoice()` produces, shown
-  inline via `package:printing`'s `PdfPreview`. This is byte-identical to the downloaded PDF:
-  correct multi-page flow, repeating table headers, and a running footer with page numbers.
-- **Live Template** — the fast Flutter-widget render, panned/zoomed via `InteractiveViewer`
-  instead of being cropped to a single page height, so long documents stay fully visible.
+  inline via `package:printing`'s `PdfPreview`. Byte-identical to what "Download PDF" saves.
+- **Live Template** — the same page widgets rendered directly by Flutter, panned/zoomed via
+  `InteractiveViewer` so long documents stay fully visible.

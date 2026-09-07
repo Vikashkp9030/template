@@ -34,7 +34,7 @@ import '../widgets/template_scaffold.dart';
 /// ├──────────────────────────────────────────────────────────────┤
 /// │                 Contact / Thank You                           │
 /// └──────────────────────────────────────────────────────────────┘
-class EnterpriseInvoiceTemplate implements InvoiceTemplate {
+class EnterpriseInvoiceTemplate extends InvoiceTemplate {
   static const theme = InvoiceTemplateThemes.enterprise;
 
   // ================================================================
@@ -42,8 +42,13 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   static const Color primaryBlue = Color(0xFF315D9B);
+  static const Color darkBlue = Color(0xFF2D5792);
+  static const Color headerBlue = Color(0xFF315D9B);
+
   static const Color textBlack = Color(0xFF111111);
+  static const Color textDark = Color(0xFF252525);
   static const Color textGray = Color(0xFF555555);
+  static const Color lightGray = Color(0xFFE6E6E6);
   static const Color borderGray = Color(0xFF777777);
   static const Color tableGray = Color(0xFFF1F3F5);
   static const Color totalGray = Color(0xFFE8EDF4);
@@ -68,6 +73,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   static const double infoHeaderSize = 6.0;
   static const double infoValueSize = 6.2;
 
+  static const double tableHeaderSize = 6.5;
   static const double tableCellSize = 6.3;
 
   static const double totalLabelSize = 6.5;
@@ -82,6 +88,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   static const double pagePadding = 36;
+  static const double sectionGap = 14;
 
   @override
   InvoiceTemplateType get type => InvoiceTemplateType.standard;
@@ -93,43 +100,41 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   String get description => type.description;
 
   @override
-  Widget build({
-    required BuildContext context,
+  List<Widget> buildPages({
     required InvoiceModel invoice,
     required InvoiceTotals totals,
     required InvoicePaperSize paperSize,
   }) {
-    final itemsPerPage = 11;
-    final totalLines = totals.lines.length;
-    final hasMultiplePages = totalLines > itemsPerPage;
+    const itemsPerPage = 11;
+    final hasMultiplePages = totals.lines.length > itemsPerPage;
 
+    return [
+      _page(
+        _buildFirstPage(
+          invoice,
+          totals,
+          itemsPerPage,
+          hasMultiplePages,
+        ),
+      ),
+
+      if (hasMultiplePages)
+        ..._buildAdditionalPages(
+          invoice,
+          totals,
+          itemsPerPage,
+        ),
+    ];
+  }
+
+  /// Page shell shared by the first and every continuation page.
+  Widget _page(Widget content) {
     return TemplateScaffold(
       theme: theme,
       child: Container(
         color: Colors.white,
         padding: const EdgeInsets.all(pagePadding),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildFirstPage(
-                invoice,
-                totals,
-                itemsPerPage,
-                hasMultiplePages,
-              ),
-
-              if (hasMultiplePages) ...[
-                const SizedBox(height: 25),
-                ..._buildAdditionalPages(
-                  invoice,
-                  totals,
-                  itemsPerPage,
-                ),
-              ],
-            ],
-          ),
-        ),
+        child: content,
       ),
     );
   }
@@ -139,11 +144,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   Widget _buildFirstPage(
-      InvoiceModel invoice,
-      InvoiceTotals totals,
-      int itemsPerPage,
-      bool hasMultiplePages,
-      ) {
+    InvoiceModel invoice,
+    InvoiceTotals totals,
+    int itemsPerPage,
+    bool hasMultiplePages,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -250,8 +255,8 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
                   Text(
                     '${invoice.company.address.city}, '
-                        '${invoice.company.address.state} '
-                        '${invoice.company.address.pincode}',
+                    '${invoice.company.address.state} '
+                    '${invoice.company.address.pincode}',
                     style: const TextStyle(
                       fontSize: companyDetailsSize,
                       color: textBlack,
@@ -331,9 +336,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   Widget _buildMetaRow(
-      String label,
-      String value,
-      ) {
+    String label,
+    String value,
+  ) {
     return SizedBox(
       height: 26,
       child: Row(
@@ -533,7 +538,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           children: headers
               .map(
                 (header) => _buildOrderHeader(header),
-          )
+              )
               .toList(),
         ),
 
@@ -543,10 +548,10 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
               .entries
               .map(
                 (entry) => _buildOrderValue(
-              entry.value,
-              entry.key == values.length - 1,
-            ),
-          )
+                  entry.value,
+                  entry.key == values.length - 1,
+                ),
+              )
               .toList(),
         ),
       ],
@@ -571,9 +576,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   Widget _buildOrderValue(
-      String text,
-      bool last,
-      ) {
+    String text,
+    bool last,
+  ) {
     return Container(
       height: 25,
       alignment: Alignment.center,
@@ -583,9 +588,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           right: last
               ? BorderSide.none
               : const BorderSide(
-            color: borderGray,
-            width: 0.5,
-          ),
+                  color: borderGray,
+                  width: 0.5,
+                ),
         ),
       ),
       child: Text(
@@ -607,12 +612,12 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   Widget _buildItemsTable(
-      InvoiceTotals totals,
-      String currency, {
-        required int startIndex,
-        required int endIndex,
-        required int emptyRows,
-      }) {
+    InvoiceTotals totals,
+    String currency, {
+    required int startIndex,
+    required int endIndex,
+    required int emptyRows,
+  }) {
     final safeEnd = endIndex.clamp(
       0,
       totals.lines.length,
@@ -644,11 +649,11 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             color: primaryBlue,
           ),
           children: const [
-            _InvoiceTableHeader('ITEM #'),
-            _InvoiceTableHeader('DESCRIPTION'),
-            _InvoiceTableHeader('QTY'),
-            _InvoiceTableHeader('UNIT PRICE'),
-            _InvoiceTableHeader('TOTAL'),
+            _EnterpriseTableHeader('ITEM #'),
+            _EnterpriseTableHeader('DESCRIPTION'),
+            _EnterpriseTableHeader('QTY'),
+            _EnterpriseTableHeader('UNIT PRICE'),
+            _EnterpriseTableHeader('TOTAL'),
           ],
         ),
 
@@ -656,7 +661,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         // DATA ROWS
         // ------------------------------------------------------------
         ...lines.asMap().entries.map(
-              (entry) {
+          (entry) {
             final line = entry.value;
 
             return TableRow(
@@ -701,7 +706,7 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         // ------------------------------------------------------------
         ...List.generate(
           emptyRows,
-              (index) {
+          (index) {
             return TableRow(
               decoration: BoxDecoration(
                 color: (lines.length + index).isEven
@@ -738,17 +743,17 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   Widget _buildItemCell(
-      String text, {
-        TextAlign align = TextAlign.left,
-        bool bold = false,
-      }) {
+    String text, {
+    TextAlign align = TextAlign.left,
+    bool bold = false,
+  }) {
     return Container(
       height: 26,
       alignment: align == TextAlign.right
           ? Alignment.centerRight
           : align == TextAlign.center
-          ? Alignment.center
-          : Alignment.centerLeft,
+              ? Alignment.center
+              : Alignment.centerLeft,
       padding: const EdgeInsets.symmetric(
         horizontal: 6,
         vertical: 4,
@@ -774,9 +779,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   Widget _buildBottomSection(
-      InvoiceModel invoice,
-      InvoiceTotals totals,
-      ) {
+    InvoiceModel invoice,
+    InvoiceTotals totals,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -885,9 +890,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   Widget _buildTotals(
-      InvoiceTotals totals,
-      InvoiceModel invoice,
-      ) {
+    InvoiceTotals totals,
+    InvoiceModel invoice,
+  ) {
     final taxRate = totals.subtotal > 0
         ? (totals.tax / totals.subtotal * 100)
         : 0;
@@ -996,9 +1001,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   Widget _buildTotalLine(
-      String label,
-      String value,
-      ) {
+    String label,
+    String value,
+  ) {
     return SizedBox(
       height: 25,
       child: Row(
@@ -1038,9 +1043,9 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   static String _money(
-      num value,
-      String currency,
-      ) {
+    num value,
+    String currency,
+  ) {
     return '$currency ${value.toStringAsFixed(2)}';
   }
 
@@ -1071,8 +1076,8 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
         Text(
           '${invoice.company.name} • '
-              '${invoice.company.phone} • '
-              '${invoice.company.email}',
+          '${invoice.company.phone} • '
+          '${invoice.company.email}',
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: footerSize,
@@ -1101,10 +1106,10 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   List<Widget> _buildAdditionalPages(
-      InvoiceModel invoice,
-      InvoiceTotals totals,
-      int itemsPerPage,
-      ) {
+    InvoiceModel invoice,
+    InvoiceTotals totals,
+    int itemsPerPage,
+  ) {
     final pages = <Widget>[];
 
     int startIndex = itemsPerPage;
@@ -1137,30 +1142,28 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   Widget _buildContinuationPage(
-      InvoiceModel invoice,
-      InvoiceTotals totals,
-      int startIndex,
-      int endIndex,
-      int pageNumber,
-      bool isLastPage,
-      int itemsPerPage,
-      ) {
+    InvoiceModel invoice,
+    InvoiceTotals totals,
+    int startIndex,
+    int endIndex,
+    int pageNumber,
+    bool isLastPage,
+    int itemsPerPage,
+  ) {
     final currentCount = endIndex - startIndex;
 
     final emptyRows = isLastPage
         ? (itemsPerPage - currentCount)
-        .clamp(0, itemsPerPage)
+            .clamp(0, itemsPerPage)
         : 0;
 
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(pagePadding),
-      child: Column(
+    return _page(
+      Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             mainAxisAlignment:
-            MainAxisAlignment.spaceBetween,
+                MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 invoice.company.name,
@@ -1214,10 +1217,10 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 // TABLE HEADER WIDGET
 // ==================================================================
 
-class _InvoiceTableHeader extends StatelessWidget {
+class _EnterpriseTableHeader extends StatelessWidget {
   final String text;
 
-  const _InvoiceTableHeader(this.text);
+  const _EnterpriseTableHeader(this.text);
 
   @override
   Widget build(BuildContext context) {
