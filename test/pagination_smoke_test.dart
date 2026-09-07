@@ -5,9 +5,12 @@ import 'package:invoice_template_preview/data/dummy/dummy_invoice_data.dart';
 import 'package:invoice_template_preview/features/invoice_templates/invoice_template_registry.dart';
 import 'package:invoice_template_preview/features/invoice_templates/invoice_template_type.dart';
 import 'package:invoice_template_preview/models/invoice/invoice_item_model.dart';
+import 'package:invoice_template_preview/features/invoice_templates/presentation/invoice_preview.dart';
 import 'package:invoice_template_preview/models/printer/paper_size.dart';
 
 void main() {
+  _embedding();
+
   final base = DummyInvoiceData.invoice();
 
   for (final count in [3, 30]) {
@@ -61,4 +64,31 @@ void main() {
       });
     }
   }
+}
+
+/// Regression: `InvoicePreview` must survive a caller that hands it a box
+/// smaller than the paper, which is how restro_admin embeds it (it once
+/// overflowed by 462px because pages are a fixed paper height).
+void _embedding() {
+  testWidgets('InvoicePreview fits a box smaller than the page', (tester) async {
+    final invoice = DummyInvoiceData.invoice();
+
+    for (final type in InvoiceTemplateType.values) {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: ConstrainedBox(
+                // Smaller than A4 (794x1123) in both axes.
+                constraints: const BoxConstraints(maxWidth: 900, maxHeight: 661),
+                child: InvoicePreview(invoice: invoice, template: type),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull, reason: '$type overflowed');
+    }
+  });
 }

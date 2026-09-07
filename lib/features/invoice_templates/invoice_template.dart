@@ -23,6 +23,11 @@ abstract class InvoiceTemplate {
   });
 
   /// On-screen preview: the same pages, stacked with a gap between them.
+  ///
+  /// A page is a fixed [InvoicePaperSize] and will not shrink, so this scales
+  /// the stack down to whatever width the caller allows and scrolls it
+  /// vertically. That keeps the widget embeddable in an arbitrary box — a
+  /// caller does not have to know the paper dimensions to avoid an overflow.
   Widget build({
     required BuildContext context,
     required InvoiceModel invoice,
@@ -35,18 +40,40 @@ abstract class InvoiceTemplate {
       paperSize: paperSize,
     );
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (final (index, page) in pages.indexed) ...[
-          if (index > 0) const SizedBox(height: 24),
-          SizedBox(
-            width: paperSize.width,
-            height: paperSize.height,
-            child: page,
-          ),
-        ],
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scale = constraints.hasBoundedWidth
+            ? (constraints.maxWidth / paperSize.width).clamp(0.0, 1.0)
+            : 1.0;
+
+        final stack = Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final (index, page) in pages.indexed) ...[
+              if (index > 0) SizedBox(height: 24 * scale),
+              SizedBox(
+                width: paperSize.width * scale,
+                height: paperSize.height * scale,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: SizedBox(
+                    width: paperSize.width,
+                    height: paperSize.height,
+                    child: page,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        );
+
+        // A scroll view needs a bounded main axis; when the caller gives us
+        // unbounded height (inside an unconstrained InteractiveViewer, say)
+        // the stack is already free to be as tall as it likes.
+        if (!constraints.hasBoundedHeight) return stack;
+
+        return SingleChildScrollView(child: Center(child: stack));
+      },
     );
   }
 }
