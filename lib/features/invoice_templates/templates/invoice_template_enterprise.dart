@@ -181,9 +181,6 @@ class EnterpriseInvoiceTemplate extends InvoiceTemplate {
           invoice.currency,
           startIndex: 0,
           endIndex: itemsPerPage,
-          emptyRows: hasMultiplePages
-              ? 0
-              : (itemsPerPage - totals.lines.length).clamp(0, itemsPerPage),
         ),
 
         const SizedBox(height: 18),
@@ -616,7 +613,6 @@ class EnterpriseInvoiceTemplate extends InvoiceTemplate {
     String currency, {
     required int startIndex,
     required int endIndex,
-    required int emptyRows,
   }) {
     final safeEnd = endIndex.clamp(
       0,
@@ -701,31 +697,6 @@ class EnterpriseInvoiceTemplate extends InvoiceTemplate {
           },
         ),
 
-        // ------------------------------------------------------------
-        // EMPTY ROWS
-        // ------------------------------------------------------------
-        ...List.generate(
-          emptyRows,
-          (index) {
-            return TableRow(
-              decoration: BoxDecoration(
-                color: (lines.length + index).isEven
-                    ? tableGray
-                    : Colors.white,
-              ),
-              children: [
-                _buildItemCell(''),
-                _buildItemCell(''),
-                _buildItemCell(''),
-                _buildItemCell(''),
-                _buildItemCell(
-                  '$currency 0.00',
-                  align: TextAlign.right,
-                ),
-              ],
-            );
-          },
-        ),
       ],
     );
   }
@@ -1150,13 +1121,6 @@ class EnterpriseInvoiceTemplate extends InvoiceTemplate {
     bool isLastPage,
     int itemsPerPage,
   ) {
-    final currentCount = endIndex - startIndex;
-
-    final emptyRows = isLastPage
-        ? (itemsPerPage - currentCount)
-            .clamp(0, itemsPerPage)
-        : 0;
-
     return _page(
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1192,7 +1156,6 @@ class EnterpriseInvoiceTemplate extends InvoiceTemplate {
             invoice.currency,
             startIndex: startIndex,
             endIndex: endIndex,
-            emptyRows: emptyRows,
           ),
 
           if (isLastPage) ...[

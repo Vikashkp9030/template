@@ -10,6 +10,7 @@ import 'package:invoice_template_preview/models/printer/paper_size.dart';
 
 void main() {
   _embedding();
+  _rowCount();
 
   final base = DummyInvoiceData.invoice();
 
@@ -89,6 +90,74 @@ void _embedding() {
       );
       await tester.pump();
       expect(tester.takeException(), isNull, reason: '$type overflowed');
+    }
+  });
+}
+
+/// The items table must have exactly one row per item (plus the header) --
+/// it used to pad up to itemsPerPage with blank "0.00" filler rows.
+void _rowCount() {
+  testWidgets('items table has one row per item, no filler', (tester) async {
+    final base = DummyInvoiceData.invoice();
+    const paper = InvoicePaperSize.a4;
+    tester.view.physicalSize = Size(paper.width, paper.height);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    for (final itemCount in [1, 3]) {
+      final invoice = base.copyWith(
+        items: [
+          for (var i = 0; i < itemCount; i++)
+            InvoiceItemModel(
+              sku: 'SKU-$i',
+              name: 'Item $i',
+              quantity: 1,
+              unitPrice: 100,
+            ),
+        ],
+      );
+      final totals = InvoiceCalculator().calculate(invoice);
+
+      for (final type in InvoiceTemplateType.values) {
+        final page = InvoiceTemplateRegistry.get(type).buildPages(
+          invoice: invoice,
+          totals: totals,
+          paperSize: paper,
+        ).first;
+
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: SizedBox(
+              width: paper.width,
+              height: paper.height,
+              child: page,
+            ),
+          ),
+        );
+
+        // The items table is the one whose header row says 'UNIT PRICE'.
+        final itemsTable = tester
+            .widgetList<Table>(find.byType(Table))
+            .firstWhere(
+              (t) => t.children.first.children.any(
+                (c) => find
+                    .descendant(
+                      of: find.byWidget(c),
+                      matching: find.text('UNIT PRICE'),
+                    )
+                    .evaluate()
+                    .isNotEmpty,
+              ),
+            );
+
+        expect(
+          itemsTable.children.length,
+          itemCount + 1, // + header row
+          reason: '$type with $itemCount item(s)',
+        );
+        expect(find.textContaining('0.00'), findsWidgets);
+      }
     }
   });
 }

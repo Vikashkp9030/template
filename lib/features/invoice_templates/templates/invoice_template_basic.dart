@@ -152,9 +152,6 @@ class BasicInvoiceTemplate extends InvoiceTemplate {
           invoice.currency,
           startIndex: 0,
           endIndex: itemsPerPage,
-          emptyRows: hasMultiplePages
-              ? 0
-              : (itemsPerPage - totals.lines.length).clamp(0, itemsPerPage),
         ),
         _buildDivider(),
         const SizedBox(height: sectionGap),
@@ -468,7 +465,6 @@ class BasicInvoiceTemplate extends InvoiceTemplate {
     String currency, {
     required int startIndex,
     required int endIndex,
-    required int emptyRows,
   }) {
     final safeEnd = endIndex.clamp(0, totals.lines.length);
     final lines = totals.lines.sublist(
@@ -513,18 +509,6 @@ class BasicInvoiceTemplate extends InvoiceTemplate {
               _buildBasicCell(_formatQuantity(line.quantity), align: TextAlign.center),
               _buildBasicCell('$currency ${line.unitPrice.toStringAsFixed(2)}', align: TextAlign.right),
               _buildBasicCell('$currency ${line.discountedAmount.toStringAsFixed(2)}', align: TextAlign.right),
-            ],
-          );
-        }),
-        // Empty rows
-        ...List.generate(emptyRows, (index) {
-          return TableRow(
-            children: [
-              _buildBasicCell(''),
-              _buildBasicCell(''),
-              _buildBasicCell(''),
-              _buildBasicCell(''),
-              _buildBasicCell('$currency 0.00', align: TextAlign.right),
             ],
           );
         }),
@@ -754,8 +738,6 @@ class BasicInvoiceTemplate extends InvoiceTemplate {
     while (startIndex < totals.lines.length) {
       final endIndex = (startIndex + itemsPerPage).clamp(0, totals.lines.length);
       final isLastPage = endIndex >= totals.lines.length;
-      final currentCount = endIndex - startIndex;
-      final emptyRows = isLastPage ? (itemsPerPage - currentCount).clamp(0, itemsPerPage) : 0;
 
       pages.add(
         _page(
@@ -776,7 +758,6 @@ class BasicInvoiceTemplate extends InvoiceTemplate {
                 invoice.currency,
                 startIndex: startIndex,
                 endIndex: endIndex,
-                emptyRows: emptyRows,
               ),
               if (isLastPage) ...[
                 const SizedBox(height: 12),

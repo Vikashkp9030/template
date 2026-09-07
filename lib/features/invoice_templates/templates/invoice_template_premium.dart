@@ -143,9 +143,6 @@ class PremiumInvoiceTemplate extends InvoiceTemplate {
           invoice.currency,
           startIndex: 0,
           endIndex: itemsPerPage,
-          emptyRows: hasMultiplePages
-              ? 0
-              : (itemsPerPage - totals.lines.length).clamp(0, itemsPerPage),
         ),
         const SizedBox(height: sectionGap),
         if (!hasMultiplePages)
@@ -493,7 +490,6 @@ class PremiumInvoiceTemplate extends InvoiceTemplate {
     String currency, {
     required int startIndex,
     required int endIndex,
-    required int emptyRows,
   }) {
     final safeEnd = endIndex.clamp(0, totals.lines.length);
     final lines = totals.lines.sublist(
@@ -554,20 +550,6 @@ class PremiumInvoiceTemplate extends InvoiceTemplate {
                 align: TextAlign.right,
                 bold: true,
               ),
-            ],
-          );
-        }),
-        ...List.generate(emptyRows, (index) {
-          return TableRow(
-            decoration: BoxDecoration(
-              color: (lines.length + index).isEven ? white : tableAltRow,
-            ),
-            children: [
-              _buildTableCell(''),
-              _buildTableCell(''),
-              _buildTableCell(''),
-              _buildTableCell(''),
-              _buildTableCell('$currency 0.00', align: TextAlign.right),
             ],
           );
         }),
@@ -839,8 +821,6 @@ class PremiumInvoiceTemplate extends InvoiceTemplate {
     while (startIndex < totals.lines.length) {
       final endIndex = (startIndex + itemsPerPage).clamp(0, totals.lines.length);
       final isLastPage = endIndex >= totals.lines.length;
-      final currentCount = endIndex - startIndex;
-      final emptyRows = isLastPage ? (itemsPerPage - currentCount).clamp(0, itemsPerPage) : 0;
 
       pages.add(
         _page(
@@ -873,7 +853,6 @@ class PremiumInvoiceTemplate extends InvoiceTemplate {
                 invoice.currency,
                 startIndex: startIndex,
                 endIndex: endIndex,
-                emptyRows: emptyRows,
               ),
               if (isLastPage) ...[
                 const SizedBox(height: sectionGap),
