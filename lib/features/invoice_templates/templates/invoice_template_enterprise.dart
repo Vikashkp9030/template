@@ -42,13 +42,8 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   static const Color primaryBlue = Color(0xFF315D9B);
-  static const Color darkBlue = Color(0xFF2D5792);
-  static const Color headerBlue = Color(0xFF315D9B);
-
   static const Color textBlack = Color(0xFF111111);
-  static const Color textDark = Color(0xFF252525);
   static const Color textGray = Color(0xFF555555);
-  static const Color lightGray = Color(0xFFE6E6E6);
   static const Color borderGray = Color(0xFF777777);
   static const Color tableGray = Color(0xFFF1F3F5);
   static const Color totalGray = Color(0xFFE8EDF4);
@@ -73,7 +68,6 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   static const double infoHeaderSize = 6.0;
   static const double infoValueSize = 6.2;
 
-  static const double tableHeaderSize = 6.5;
   static const double tableCellSize = 6.3;
 
   static const double totalLabelSize = 6.5;
@@ -88,7 +82,6 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   // ================================================================
 
   static const double pagePadding = 36;
-  static const double sectionGap = 14;
 
   @override
   InvoiceTemplateType get type => InvoiceTemplateType.standard;
