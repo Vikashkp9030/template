@@ -86,39 +86,44 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             currency,
             startIndex: 0,
             endIndex: itemsPerPage,
-            emptyRows: hasMultiplePages ? 0 : 5,
+            emptyRows: 0,
           ),
         ),
         const SizedBox(height: 12),
 
-        // Totals Section (right-aligned) - Only on last page
+        // Summary Row: Comments (left) + Totals (right)
         if (!hasMultiplePages)
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Container()),
+              // Left: Comments and Special Instructions
+              Expanded(
+                child: _buildCommentsOnly(invoice),
+              ),
+              const SizedBox(width: 12),
+              // Right: Totals and Tax Details
               SizedBox(
-                width: 200,
+                width: 220,
                 child: _buildTotalsSection(totals, invoice),
               ),
             ],
           )
         else
-          Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(
-              width: 200,
-              child: _buildTotalsSection(totals, invoice),
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: Container()),
+              SizedBox(
+                width: 220,
+                child: _buildTotalsSection(totals, invoice),
+              ),
+            ],
           ),
         const SizedBox(height: 12),
 
-        // Comments + Footer - Only on last page
-        if (!hasMultiplePages) ...[
-          _buildCommentsSection(invoice),
-          const SizedBox(height: 6),
+        // Footer - Only on last page
+        if (!hasMultiplePages)
           _buildFooterSection(),
-        ],
       ],
     );
   }
@@ -204,21 +209,24 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
         ),
         const SizedBox(height: 12),
 
-        // Totals and Footer - Only on last page
+        // Summary Row - Only on last page
         if (isLastPage) ...[
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Container()),
+              // Left: Comments
+              Expanded(
+                child: _buildCommentsOnly(invoice),
+              ),
+              const SizedBox(width: 12),
+              // Right: Totals
               SizedBox(
-                width: 200,
+                width: 220,
                 child: _buildTotalsSection(totals, invoice),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          _buildCommentsSection(invoice),
-          const SizedBox(height: 6),
           _buildFooterSection(),
         ],
       ],
@@ -771,88 +779,45 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   }
 
   /// Comments section + Footer
-  Widget _buildCommentsSection(InvoiceModel invoice) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFD0D5E0), width: 1),
-              borderRadius: BorderRadius.circular(2),
-              color: const Color(0xFFFBFCFE),
-            ),
-            padding: const EdgeInsets.all(5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Other Comments or Special Instructions',
-                  style: TextStyle(
-                    fontSize: 5,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF1e3a5f),
-                    letterSpacing: 0.2,
-                  ),
-                ),
-                const SizedBox(height: 3.5),
-                if (invoice.terms != null)
-                  Text(
-                    '1. ${invoice.terms!}',
-                    style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                if (invoice.customerNotes != null) ...[
-                  const SizedBox(height: 1.5),
-                  Text(
-                    '2. ${invoice.customerNotes!}',
-                    style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ],
+  Widget _buildCommentsOnly(InvoiceModel invoice) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFD0D5E0), width: 1),
+        borderRadius: BorderRadius.circular(2),
+        color: const Color(0xFFFBFCFE),
+      ),
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Other Comments or Special Instructions',
+            style: TextStyle(
+              fontSize: 5,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF1e3a5f),
+              letterSpacing: 0.2,
             ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFF1e3a5f), width: 1.5),
-              borderRadius: BorderRadius.circular(2),
-              color: const Color(0xFFFAFBFC),
+          const SizedBox(height: 3.5),
+          if (invoice.terms != null)
+            Text(
+              '1. ${invoice.terms!}',
+              style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
-            padding: const EdgeInsets.all(5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Make all checks payable to',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 4.5,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF2C3E50),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  invoice.company.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 5.5,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF1e3a5f),
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ],
+          if (invoice.customerNotes != null) ...[
+            const SizedBox(height: 1.5),
+            Text(
+              '2. ${invoice.customerNotes!}',
+              style: const TextStyle(fontSize: 4.5, color: Color(0xFF555555), fontWeight: FontWeight.w500),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ),
-      ],
+          ],
+        ],
+      ),
     );
   }
 
