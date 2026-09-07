@@ -48,23 +48,24 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
           _buildInfoBar(invoice),
           const SizedBox(height: 12),
 
-          // Items Table + Totals
+          // Items Table (full width)
           Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _buildItemsTable(totals, invoice.currency),
-                ),
-                const SizedBox(width: 16),
-                SizedBox(
-                  width: 180,
-                  child: _buildTotalsSection(totals, invoice),
-                ),
-              ],
-            ),
+            child: _buildItemsTable(totals, invoice.currency),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
+
+          // Totals Section (right-aligned)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: Container()),
+              SizedBox(
+                width: 200,
+                child: _buildTotalsSection(totals, invoice),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
 
           // Comments + Footer
           _buildCommentsSection(invoice),
