@@ -37,18 +37,20 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
 
     return TemplateScaffold(
       theme: theme,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Page 1: Header + Billing + Info + Items
-          _buildFirstPage(invoice, totals, invoice.currency, itemsPerPage, hasMultiplePages),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Page 1: Header + Billing + Info + Items
+            _buildFirstPage(invoice, totals, invoice.currency, itemsPerPage, hasMultiplePages),
 
-          // Additional pages if needed
-          if (hasMultiplePages) ...[
-            const SizedBox(height: 20),
-            ..._buildAdditionalPages(invoice, totals, invoice.currency, itemsPerPage),
+            // Additional pages if needed
+            if (hasMultiplePages) ...[
+              const SizedBox(height: 20),
+              ..._buildAdditionalPages(invoice, totals, invoice.currency, itemsPerPage),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -67,64 +69,77 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Header: Company (left) + INVOICE Title (right)
+        // SECTION 1: Header + Company Info
         _buildHeaderSection(invoice),
-        const SizedBox(height: 16),
+        _buildSectionDivider(),
 
-        // Bill To / Ship To
+        // SECTION 2: Bill To / Ship To
         _buildBillingSection(invoice),
-        const SizedBox(height: 12),
+        _buildSectionDivider(),
 
-        // Info Bar (Salesperson, P.O., etc.)
+        // SECTION 3: Info Bar
         _buildInfoBar(invoice),
-        const SizedBox(height: 12),
+        _buildSectionDivider(),
 
-        // Items Table (full width) - First page items
-        Expanded(
-          child: _buildItemsTablePaginated(
-            totals,
-            currency,
-            startIndex: 0,
-            endIndex: itemsPerPage,
-            emptyRows: 0,
-          ),
+        // SECTION 4: Items Table
+        _buildItemsTablePaginated(
+          totals,
+          currency,
+          startIndex: 0,
+          endIndex: itemsPerPage,
+          emptyRows: 0,
         ),
-        const SizedBox(height: 12),
+        _buildSectionDivider(),
 
-        // Summary Row: Comments (left) + Totals (right)
+        // SECTION 5: Summary Row (Comments + Totals)
         if (!hasMultiplePages)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left: Comments and Special Instructions
-              Expanded(
-                child: _buildCommentsOnly(invoice),
-              ),
-              const SizedBox(width: 12),
-              // Right: Totals and Tax Details
-              SizedBox(
-                width: 220,
-                child: _buildTotalsSection(totals, invoice),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left: Comments and Special Instructions
+                Expanded(
+                  child: _buildCommentsOnly(invoice),
+                ),
+                const SizedBox(width: 12),
+                // Right: Totals and Tax Details
+                SizedBox(
+                  width: 220,
+                  child: _buildTotalsSection(totals, invoice),
+                ),
+              ],
+            ),
           )
         else
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: Container()),
-              SizedBox(
-                width: 220,
-                child: _buildTotalsSection(totals, invoice),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: Container()),
+                SizedBox(
+                  width: 220,
+                  child: _buildTotalsSection(totals, invoice),
+                ),
+              ],
+            ),
           ),
-        const SizedBox(height: 12),
+        _buildSectionDivider(),
 
-        // Footer - Only on last page
-        if (!hasMultiplePages)
-          _buildFooterSection(),
+        // SECTION 6: Footer
+        if (!hasMultiplePages) _buildFooterSection(),
       ],
+    );
+  }
+
+  Widget _buildSectionDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Container(
+        height: 1,
+        color: const Color(0xFFD0D5E0),
+      ),
     );
   }
 
@@ -195,38 +210,39 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        _buildSectionDivider(),
 
         // Items Table (full width)
-        Expanded(
-          child: _buildItemsTablePaginated(
-            totals,
-            currency,
-            startIndex: startIndex,
-            endIndex: endIndex,
-            emptyRows: isLastPage ? 0 : 5,
-          ),
+        _buildItemsTablePaginated(
+          totals,
+          currency,
+          startIndex: startIndex,
+          endIndex: endIndex,
+          emptyRows: isLastPage ? 0 : 5,
         ),
-        const SizedBox(height: 12),
+        _buildSectionDivider(),
 
         // Summary Row - Only on last page
         if (isLastPage) ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left: Comments
-              Expanded(
-                child: _buildCommentsOnly(invoice),
-              ),
-              const SizedBox(width: 12),
-              // Right: Totals
-              SizedBox(
-                width: 220,
-                child: _buildTotalsSection(totals, invoice),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left: Comments
+                Expanded(
+                  child: _buildCommentsOnly(invoice),
+                ),
+                const SizedBox(width: 12),
+                // Right: Totals
+                SizedBox(
+                  width: 220,
+                  child: _buildTotalsSection(totals, invoice),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
+          _buildSectionDivider(),
           _buildFooterSection(),
         ],
       ],
