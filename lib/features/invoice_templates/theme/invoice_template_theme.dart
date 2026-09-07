@@ -207,70 +207,70 @@ class InvoiceTemplateThemes {
     ),
   );
 
-  static const _enterpriseAccent = 0xFF2563EB;
-  static const _enterpriseInk = 0xFF111827;
-  static const _enterpriseBody = 0xFF374151;
-  static const _enterpriseMuted = 0xFF6B7280;
+  static const _enterpriseAccent = 0xFF315A96;
+  static const _enterpriseInk = 0xFF111111;
+  static const _enterpriseBody = 0xFF333333;
+  static const _enterpriseMuted = 0xFF667085;
 
   static const enterprise = InvoiceTemplateTheme(
-    pageMargin: 36,
+    pageMargin: 25,
     background: 0xFFFFFFFF,
     primary: _enterpriseInk,
     accent: _enterpriseAccent,
     textMuted: _enterpriseMuted,
-    divider: 0xFFE5E7EB,
-    surfaceMuted: 0xFFF9FAFB,
+    divider: 0xFF999999,
+    surfaceMuted: 0xFFE8F0F8,
     type: InvoiceTypeScale(
       documentTitle: InvoiceTextStyle(
-        fontSize: 19,
-        weight: InvoiceFontWeight.black,
-        letterSpacing: 1.0,
+        fontSize: 48,
+        weight: InvoiceFontWeight.bold,
+        letterSpacing: 0.0,
         color: _enterpriseAccent,
       ),
       sectionLabel: InvoiceTextStyle(
-        fontSize: 10,
-        weight: InvoiceFontWeight.bold,
-        color: _enterpriseAccent,
-        letterSpacing: 0.6,
-      ),
-      body: InvoiceTextStyle(fontSize: 11, color: _enterpriseBody, height: 1.45),
-      bodyStrong: InvoiceTextStyle(
-        fontSize: 11,
-        weight: InvoiceFontWeight.semiBold,
-        color: _enterpriseInk,
-        height: 1.45,
-      ),
-      tableHeader: InvoiceTextStyle(
-        fontSize: 10,
+        fontSize: 12,
         weight: InvoiceFontWeight.bold,
         color: 0xFFFFFFFF,
-        letterSpacing: 0.4,
+        letterSpacing: 0.5,
       ),
-      tableCell: InvoiceTextStyle(fontSize: 11, color: _enterpriseBody),
-      tableCellStrong: InvoiceTextStyle(
-        fontSize: 11,
+      body: InvoiceTextStyle(fontSize: 11, color: _enterpriseInk, height: 1.6),
+      bodyStrong: InvoiceTextStyle(
+        fontSize: 12,
         weight: InvoiceFontWeight.bold,
         color: _enterpriseInk,
+        height: 1.6,
       ),
-      totalLabel: InvoiceTextStyle(fontSize: 11, color: _enterpriseMuted),
-      totalValue: InvoiceTextStyle(fontSize: 11, color: _enterpriseInk),
+      tableHeader: InvoiceTextStyle(
+        fontSize: 11,
+        weight: InvoiceFontWeight.bold,
+        color: 0xFFFFFFFF,
+        letterSpacing: 0.5,
+      ),
+      tableCell: InvoiceTextStyle(fontSize: 10, color: _enterpriseBody),
+      tableCellStrong: InvoiceTextStyle(
+        fontSize: 10,
+        weight: InvoiceFontWeight.regular,
+        color: _enterpriseBody,
+      ),
+      totalLabel: InvoiceTextStyle(fontSize: 11, color: _enterpriseInk),
+      totalValue: InvoiceTextStyle(fontSize: 11, weight: InvoiceFontWeight.bold, color: _enterpriseInk),
       grandTotalLabel: InvoiceTextStyle(
-        fontSize: 13,
+        fontSize: 12,
         weight: InvoiceFontWeight.bold,
         color: _enterpriseInk,
       ),
       grandTotalValue: InvoiceTextStyle(
-        fontSize: 16,
+        fontSize: 13,
         weight: InvoiceFontWeight.bold,
-        color: _enterpriseAccent,
+        color: _enterpriseInk,
       ),
-      footer: InvoiceTextStyle(fontSize: 9, color: _enterpriseMuted),
+      footer: InvoiceTextStyle(fontSize: 10, color: _enterpriseInk),
     ),
     table: InvoiceTableStyle(
       headerBackground: _enterpriseAccent,
       headerForeground: 0xFFFFFFFF,
-      rowDivider: 0xFFE5E7EB,
-      cellPaddingVertical: 10,
+      rowDivider: 0xFF999999,
+      cellPaddingVertical: 8,
       cellPaddingHorizontal: 8,
     ),
   );

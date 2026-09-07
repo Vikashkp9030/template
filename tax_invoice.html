@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAX INVOICE - Spice Garden Restaurant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+            color: #344054;
+        }
+
+        .invoice-container {
+            width: 210mm;
+            height: 297mm;
+            background: #fffcf8;
+            margin: 0 auto;
+            padding: 16mm 18mm;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER SECTION */
+        .invoice-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 24px;
+            align-items: flex-start;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .invoice-title {
+            font-size: 24pt;
+            font-weight: 700;
+            line-height: 28pt;
+            color: #182230;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .restaurant-name {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #182230;
+            margin-bottom: 2px;
+        }
+
+        .restaurant-address {
+            font-size: 9pt;
+            font-weight: 400;
+            color: #667085;
+            line-height: 12pt;
+            max-width: 80mm;
+        }
+
+        .restaurant-phone {
+            font-size: 9pt;
+            font-weight: 400;
+            color: #667085;
+            margin-top: 4px;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-end;
+        }
+
+        .invoice-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: right;
+        }
+
+        .meta-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .meta-label {
+            font-size: 8pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: #667085;
+        }
+
+        .meta-value {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #182230;
+        }
+
+        /* DIVIDER */
+        .divider {
+            height: 1px;
+            background: #eaecf0;
+            margin: 24px 0;
+        }
+
+        /* FROM/BILL TO CARDS */
+        .party-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .party-card {
+            background: #f8fafc;
+            border: 1px solid #eaecf0;
+            border-radius: 6px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .party-label {
+            font-size: 8pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: #d97706;
+        }
+
+        .party-name {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #182230;
+            line-height: 13pt;
+        }
+
+        .party-details {
+            font-size: 9pt;
+            font-weight: 400;
+            color: #667085;
+            line-height: 13pt;
+        }
+
+        /* ITEMS TABLE */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 9.5pt;
+        }
+
+        .items-table thead {
+            background: #182230;
+            color: white;
+        }
+
+        .items-table th {
+            font-size: 8.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 10px 8px;
+            text-align: left;
+            border: none;
+            line-height: 12pt;
+        }
+
+        .items-table th:last-child {
+            text-align: right;
+        }
+
+        .items-table th:nth-child(2),
+        .items-table th:nth-child(3),
+        .items-table th:nth-child(4) {
+            text-align: right;
+        }
+
+        .items-table tbody tr {
+            border-bottom: 1px solid #eaecf0;
+            height: 16mm;
+        }
+
+        .items-table tbody tr:nth-child(even) {
+            background: #fffcf8;
+        }
+
+        .items-table tbody tr:nth-child(odd) {
+            background: white;
+        }
+
+        .items-table td {
+            padding: 10px 8px;
+            font-weight: 400;
+            color: #344054;
+            border: none;
+        }
+
+        .items-table td:first-child {
+            text-align: left;
+            width: 53%;
+        }
+
+        .items-table td:nth-child(2) {
+            text-align: right;
+            width: 14%;
+        }
+
+        .items-table td:nth-child(3) {
+            text-align: right;
+            width: 16%;
+        }
+
+        .items-table td:nth-child(4) {
+            text-align: right;
+            width: 17%;
+            font-weight: 500;
+        }
+
+        /* GRAND TOTAL */
+        .total-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 32px;
+        }
+
+        .total-card {
+            background: linear-gradient(135deg, #182230 0%, #1f2a38 100%);
+            color: white;
+            padding: 18px 24px;
+            border-radius: 6px;
+            text-align: right;
+            min-width: 200px;
+        }
+
+        .total-label {
+            font-size: 9pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 6px;
+        }
+
+        .total-amount {
+            font-size: 24pt;
+            font-weight: 700;
+            color: #d97706;
+            line-height: 28pt;
+            letter-spacing: -0.5px;
+        }
+
+        /* FOOTER */
+        .invoice-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid #eaecf0;
+            font-size: 8pt;
+            color: #667085;
+            text-align: center;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .invoice-container {
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+            }
+        }
+
+        @media screen and (max-width: 800px) {
+            body {
+                padding: 10px;
+            }
+            .invoice-container {
+                width: 100%;
+                max-width: 600px;
+                height: auto;
+                padding: 16px;
+            }
+            .invoice-header {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .header-right {
+                align-items: flex-start;
+            }
+            .party-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <!-- HEADER -->
+        <div class="invoice-header">
+            <div class="header-left">
+                <div class="invoice-title">TAX INVOICE</div>
+                <div class="restaurant-name">Spice Garden Restaurant</div>
+                <div class="restaurant-address">Plot 12, HITEC City, Madhapur, Hyderabad, Telangana, India, 500081</div>
+                <div class="restaurant-phone">Phone: +91 9876543210</div>
+            </div>
+            <div class="header-right">
+                <div class="invoice-meta">
+                    <div class="meta-row">
+                        <div class="meta-label">Invoice #</div>
+                        <div class="meta-value">INV-2026-001</div>
+                    </div>
+                    <div class="meta-row">
+                        <div class="meta-label">Date</div>
+                        <div class="meta-value">28-Aug-2026</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- FROM / BILL TO -->
+        <div class="party-cards">
+            <div class="party-card">
+                <div class="party-label">From</div>
+                <div class="party-name">Spice Garden Restaurant</div>
+                <div class="party-details">Plot 12, HITEC City, Madhapur, Hyderabad, Telangana, India, 500081</div>
+                <div class="party-details">Phone: +91 9876543210</div>
+            </div>
+            <div class="party-card">
+                <div class="party-label">Bill To</div>
+                <div class="party-name">Rahul Sharma</div>
+                <div class="party-details">12 Banjara Hills, Hyderabad, Telangana, India, 500034</div>
+            </div>
+        </div>
+
+        <!-- ITEMS TABLE -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Paneer Butter Masala</td>
+                    <td>2.00</td>
+                    <td>₹ 280.00</td>
+                    <td>₹ 588.00</td>
+                </tr>
+                <tr>
+                    <td>Butter Naan</td>
+                    <td>4.00</td>
+                    <td>₹ 40.00</td>
+                    <td>₹ 168.00</td>
+                </tr>
+                <tr>
+                    <td>Masala Dosa</td>
+                    <td>1.00</td>
+                    <td>₹ 120.00</td>
+                    <td>₹ 105.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- GRAND TOTAL -->
+        <div class="total-section">
+            <div class="total-card">
+                <div class="total-label">Grand Total</div>
+                <div class="total-amount">₹ 861.00</div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="invoice-footer">
+            <p>Thank you for your business</p>
+        </div>
+    </div>
+</body>
+</html>

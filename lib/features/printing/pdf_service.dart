@@ -132,75 +132,324 @@ class PdfService {
 
   List<pw.Widget> _buildEnterprise(InvoiceTemplateTheme theme, InvoiceModel invoice, InvoiceTotals totals) {
     return [
+      // Header: company info left, INVOICE title right with date/invoice# boxes
       pw.Row(
-        crossAxisAlignment: pw.CrossAxisAlignment.center,
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          _logoMark(invoice.company, size: 60, background: theme.pdfAccent),
-          pw.SizedBox(width: 18),
           pw.Expanded(
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text(invoice.company.name, style: theme.type.bodyStrong.pdf.copyWith(fontSize: 20)),
-                pw.Text(invoice.company.address.singleLine, style: theme.type.body.pdf),
-                pw.Text('Tel: ${invoice.company.phone} | ${invoice.company.email}', style: theme.type.body.pdf),
+                pw.Text(invoice.company.name, style: theme.type.bodyStrong.pdf.copyWith(fontSize: 13)),
+                pw.SizedBox(height: 4),
+                pw.Text(invoice.company.address.singleLine, style: theme.type.body.pdf.copyWith(fontSize: 11)),
+                pw.SizedBox(height: 8),
+                pw.Text('Phone: ${invoice.company.phone}', style: theme.type.body.pdf.copyWith(fontSize: 11)),
               ],
             ),
           ),
-          pw.Container(
-            padding: const pw.EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: pw.BoxDecoration(
-              color: PdfColor.fromInt(0x0F2563EB),
-              borderRadius: pw.BorderRadius.circular(4),
-            ),
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.end,
-              children: [
-                pw.Text(invoice.documentTitle, style: theme.type.documentTitle.pdf),
-                pw.Text('${invoice.numberLabel} ${invoice.number}', style: theme.type.bodyStrong.pdf),
-              ],
-            ),
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.end,
+            children: [
+              pw.Text('INVOICE', style: theme.type.documentTitle.pdf),
+              pw.SizedBox(height: 15),
+              _buildPdfMetaBox('DATE:', DateFormatter.display(invoice.date)),
+              pw.SizedBox(height: 8),
+              _buildPdfMetaBox('INVOICE #', invoice.number),
+            ],
           ),
         ],
       ),
-      pw.SizedBox(height: 28),
+      pw.SizedBox(height: 30),
+
+      // Billing section: BILL TO and SHIP TO
       pw.Row(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Expanded(
-            child: _cardColumn(theme, 'Bill To', [
+            child: _buildPdfBillingCard(theme, 'BILL TO:', [
               invoice.customer.name,
               if (invoice.customer.billingAddress != null)
                 invoice.customer.billingAddress!.singleLine,
               if (invoice.customer.phone != null) 'Phone: ${invoice.customer.phone}',
             ]),
           ),
-          pw.SizedBox(width: 16),
+          pw.SizedBox(width: 40),
           pw.Expanded(
-            child: _cardColumn(theme, 'Details', [
-              'Date: ${DateFormatter.display(invoice.date)}',
-              if (invoice.dueDate != null) 'Due: ${DateFormatter.display(invoice.dueDate!)}',
-              'Method: ${invoice.payment.method}',
-              'Status: ${invoice.payment.status}',
-            ]),
+            child: _buildPdfBillingCard(theme, 'SHIP TO (if different):', []),
           ),
         ],
       ),
-      pw.SizedBox(height: 28),
-      _itemsTable(theme, invoice, totals),
-      pw.SizedBox(height: 24),
+      pw.SizedBox(height: 20),
+
+      // Info bar: 6 columns
+      _buildPdfInfoBar(theme),
+      pw.SizedBox(height: 20),
+
+      // Items table and totals side-by-side
       pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Expanded(
-            child: _notesTerms(theme, invoice) ?? pw.SizedBox.shrink(),
+            child: _buildPdfItemsTable(theme, invoice, totals),
           ),
-          pw.SizedBox(width: 16),
-          pw.SizedBox(width: 240, child: _totals(theme, invoice, totals)),
+          pw.SizedBox(width: 20),
+          pw.SizedBox(
+            width: 220,
+            child: _buildPdfTotalsBox(theme, totals),
+          ),
         ],
       ),
-      pw.SizedBox(height: 32),
-      _signature(theme),
+      pw.SizedBox(height: 20),
+
+      // Comments box
+      _buildPdfCommentsBox(theme),
+      pw.SizedBox(height: 20),
+
+      // Footer
+      _buildPdfFooter(theme),
     ];
+  }
+
+  pw.Widget _buildPdfMetaBox(String label, String value) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      children: [
+        pw.Text(label, style: const pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+        pw.Container(
+          padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(width: 1),
+            color: PdfColors.white,
+          ),
+          child: pw.Text(value, style: const pw.TextStyle(fontSize: 11)),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildPdfBillingCard(InvoiceTemplateTheme theme, String title, List<String> lines) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Container(
+          padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          color: theme.pdfAccent,
+          child: pw.Text(title, style: theme.type.sectionLabel.pdf),
+        ),
+        pw.SizedBox(height: 8),
+        ...lines.map((line) => pw.Padding(
+          padding: const pw.EdgeInsets.only(bottom: 2),
+          child: pw.Text(line, style: theme.type.body.pdf.copyWith(fontSize: 11)),
+        )),
+      ],
+    );
+  }
+
+  pw.Widget _buildPdfInfoBar(InvoiceTemplateTheme theme) {
+    const labels = ['SALESPERSON', 'P.O. #', 'SHIP DATE', 'SHIP VIA', 'F.O.B.', 'TERMS'];
+
+    return pw.Container(
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(width: 1, color: theme.pdfDivider),
+      ),
+      child: pw.Column(
+        children: [
+          pw.Row(
+            children: labels.map((label) {
+              return pw.Expanded(
+                child: pw.Container(
+                  padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: pw.BoxDecoration(
+                    color: theme.pdfAccent,
+                    border: pw.Border(
+                      right: pw.BorderSide(width: 1, color: theme.pdfDivider),
+                    ),
+                  ),
+                  child: pw.Text(
+                    label,
+                    textAlign: pw.TextAlign.center,
+                    style: theme.type.tableHeader.pdf,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          pw.Row(
+            children: List.generate(6, (i) {
+              return pw.Expanded(
+                child: pw.Container(
+                  padding: const pw.EdgeInsets.all(8),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border(
+                      right: pw.BorderSide(width: 1, color: theme.pdfDivider),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfItemsTable(InvoiceTemplateTheme theme, InvoiceModel invoice, InvoiceTotals totals) {
+    return pw.Table(
+      border: pw.TableBorder.all(width: 1, color: theme.pdfDivider),
+      columnWidths: {
+        0: const pw.FractionColumnWidth(0.08),
+        1: const pw.FractionColumnWidth(0.45),
+        2: const pw.FractionColumnWidth(0.15),
+        3: const pw.FractionColumnWidth(0.15),
+        4: const pw.FractionColumnWidth(0.17),
+      },
+      children: [
+        pw.TableRow(
+          decoration: pw.BoxDecoration(color: theme.pdfAccent),
+          children: [
+            _buildPdfTableHeaderCell(theme, 'ITEM #'),
+            _buildPdfTableHeaderCell(theme, 'DESCRIPTION'),
+            _buildPdfTableHeaderCell(theme, 'QTY'),
+            _buildPdfTableHeaderCell(theme, 'UNIT PRICE'),
+            _buildPdfTableHeaderCell(theme, 'TOTAL'),
+          ],
+        ),
+        ...totals.lines.asMap().entries.map((entry) {
+          final isEven = entry.key % 2 == 0;
+          return pw.TableRow(
+            decoration: pw.BoxDecoration(
+              color: isEven ? theme.pdfSurfaceMuted : PdfColors.white,
+            ),
+            children: [
+              _buildPdfTableCell(theme, ''),
+              _buildPdfTableCell(theme, entry.value.name),
+              _buildPdfTableCell(theme, entry.value.quantity.toStringAsFixed(2), align: pw.TextAlign.right),
+              _buildPdfTableCell(theme, '${invoice.currency} ${entry.value.unitPrice.toStringAsFixed(2)}', align: pw.TextAlign.right),
+              _buildPdfTableCell(theme, '${invoice.currency} ${entry.value.discountedAmount.toStringAsFixed(2)}', align: pw.TextAlign.right),
+            ],
+          );
+        }),
+        ...List.generate(8, (i) {
+          final rowIndex = totals.lines.length + i;
+          final isEven = rowIndex % 2 == 0;
+          return pw.TableRow(
+            decoration: pw.BoxDecoration(
+              color: isEven ? theme.pdfSurfaceMuted : PdfColors.white,
+            ),
+            children: [
+              _buildPdfTableCell(theme, ''),
+              _buildPdfTableCell(theme, ''),
+              _buildPdfTableCell(theme, ''),
+              _buildPdfTableCell(theme, ''),
+              _buildPdfTableCell(theme, '${invoice.currency} 0.00', align: pw.TextAlign.right),
+            ],
+          );
+        }),
+      ],
+    );
+  }
+
+  pw.Widget _buildPdfTableHeaderCell(InvoiceTemplateTheme theme, String text) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: pw.Text(text, style: theme.type.tableHeader.pdf),
+    );
+  }
+
+  pw.Widget _buildPdfTableCell(InvoiceTemplateTheme theme, String text, {pw.TextAlign align = pw.TextAlign.left}) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: pw.Text(text, textAlign: align, style: theme.type.tableCell.pdf),
+    );
+  }
+
+  pw.Widget _buildPdfTotalsBox(InvoiceTemplateTheme theme, InvoiceTotals totals) {
+    return pw.Container(
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(width: 1, color: theme.pdfDivider),
+        color: theme.pdfSurfaceMuted,
+      ),
+      child: pw.Column(
+        children: [
+          _buildPdfTotalRow(theme, 'SUBTOTAL', '₹ ${totals.subtotal.toStringAsFixed(2)}'),
+          _buildPdfTotalRow(theme, 'TAX RATE', '0.00%'),
+          _buildPdfTotalRow(theme, 'TAX', '₹ ${totals.tax.toStringAsFixed(2)}'),
+          _buildPdfTotalRow(theme, 'S & H', '₹ 0.00'),
+          _buildPdfTotalRow(theme, 'OTHER', '₹ 0.00'),
+          _buildPdfTotalRow(theme, 'TOTAL', '₹ ${totals.grandTotal.toStringAsFixed(2)}', isTotal: true),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfTotalRow(InvoiceTemplateTheme theme, String label, String value, {bool isTotal = false}) {
+    return pw.Container(
+      decoration: pw.BoxDecoration(
+        border: pw.Border(
+          bottom: pw.BorderSide(width: 1, color: theme.pdfDivider),
+        ),
+      ),
+      child: pw.Row(
+        children: [
+          pw.Expanded(
+            child: pw.Padding(
+              padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: pw.Text(
+                label,
+                style: (isTotal ? theme.type.grandTotalLabel.pdf : theme.type.totalLabel.pdf)
+                  .copyWith(fontSize: 11),
+              ),
+            ),
+          ),
+          pw.Padding(
+            padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: pw.Text(
+              value,
+              textAlign: pw.TextAlign.right,
+              style: (isTotal ? theme.type.grandTotalValue.pdf : theme.type.totalValue.pdf)
+                .copyWith(fontSize: 11),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfCommentsBox(InvoiceTemplateTheme theme) {
+    return pw.Container(
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(width: 1, color: theme.pdfDivider),
+        color: PdfColor.fromInt(0xFFF0F0F0),
+      ),
+      padding: const pw.EdgeInsets.all(12),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(
+            'Other Comments or Special Instructions',
+            style: theme.type.body.pdf.copyWith(fontWeight: pw.FontWeight.bold, fontSize: 11),
+          ),
+          pw.SizedBox(height: 60),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildPdfFooter(InvoiceTemplateTheme theme) {
+    return pw.Column(
+      children: [
+        pw.Text(
+          'Thank You For Your Business!',
+          style: theme.type.footer.pdf.copyWith(fontStyle: pw.FontStyle.italic, fontSize: 12),
+        ),
+        pw.SizedBox(height: 10),
+        pw.Text(
+          'If you have any questions about this invoice, please contact us',
+          style: theme.type.footer.pdf.copyWith(fontSize: 10),
+        ),
+      ],
+    );
   }
 
   // ---------------------------------------------------------------------

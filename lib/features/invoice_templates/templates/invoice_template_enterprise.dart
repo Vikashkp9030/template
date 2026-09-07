@@ -4,21 +4,14 @@ import '../../../core/utils/date_formatter.dart';
 import '../../../models/invoice/invoice_model.dart';
 import '../../../models/invoice/invoice_totals.dart';
 import '../../../models/printer/paper_size.dart';
-import '../../../widgets/common/invoice_bits.dart';
 import '../invoice_template.dart';
 import '../invoice_template_type.dart';
 import '../theme/invoice_template_theme.dart';
-import '../widgets/footer_section.dart';
-import '../widgets/items_table_section.dart';
-import '../widgets/notes_terms_section.dart';
-import '../widgets/party_info_section.dart';
-import '../widgets/signature_section.dart';
 import '../widgets/template_scaffold.dart';
-import '../widgets/totals_section.dart';
 
-/// Corporate, structured layout with strong information hierarchy: a
-/// branded header band, accent-bordered info cards, and a filled table
-/// header — sophisticated without becoming visually heavy.
+/// Tax invoice template matching exact reference design: left-side company header,
+/// right-side INVOICE title with date/invoice# boxes, billing sections, info bar,
+/// items table, totals sidebar, comments, and thank you footer.
 class EnterpriseInvoiceTemplate implements InvoiceTemplate {
   static const theme = InvoiceTemplateThemes.enterprise;
 
@@ -43,90 +36,374 @@ class EnterpriseInvoiceTemplate implements InvoiceTemplate {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              LogoMark(
-                company: invoice.company,
-                size: 60,
-                background: Color(theme.accent),
-              ),
-              const SizedBox(width: 18),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(invoice.company.name, style: theme.type.bodyStrong.flutter.copyWith(fontSize: 20)),
-                    const SizedBox(height: 2),
-                    Text(invoice.company.address.singleLine, style: theme.type.body.flutter),
-                    Text('Tel: ${invoice.company.phone} | ${invoice.company.email}', style: theme.type.body.flutter),
-                  ],
+          _buildHeader(invoice),
+          const SizedBox(height: 30),
+          _buildBillingSection(invoice),
+          const SizedBox(height: 20),
+          _buildInfoBar(),
+          const SizedBox(height: 20),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _buildItemsTable(totals, invoice.currency),
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Color(theme.accent).withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(4),
+                const SizedBox(width: 20),
+                SizedBox(
+                  width: 220,
+                  child: _buildTotalsBox(totals, invoice.currency),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(invoice.documentTitle, style: theme.type.documentTitle.flutter),
-                    const SizedBox(height: 2),
-                    Text('${invoice.numberLabel} ${invoice.number}', style: theme.type.bodyStrong.flutter),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 28),
-          PartyInfoSection(
-            theme: theme,
-            variant: PartyInfoVariant.card,
-            columns: [
-              PartyInfoColumn(
-                title: 'Bill To',
-                lines: [
-                  invoice.customer.name,
-                  if (invoice.customer.billingAddress != null)
-                    invoice.customer.billingAddress!.singleLine,
-                  if (invoice.customer.phone != null) 'Phone: ${invoice.customer.phone}',
-                ],
-              ),
-              PartyInfoColumn(
-                title: 'Details',
-                lines: [
-                  'Date: ${DateFormatter.display(invoice.date)}',
-                  if (invoice.dueDate != null) 'Due: ${DateFormatter.display(invoice.dueDate!)}',
-                  'Method: ${invoice.payment.method}',
-                  'Status: ${invoice.payment.status}',
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 28),
-          ItemsTableSection(theme: theme, lines: totals.lines, currency: invoice.currency),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: NotesTermsSection(theme: theme, notes: invoice.notes, terms: invoice.terms),
-              ),
-              const SizedBox(width: 16),
-              SizedBox(
-                width: 240,
-                child: TotalsSection(theme: theme, totals: totals, currency: invoice.currency),
+                child: _buildCommentsBox(),
               ),
             ],
           ),
-          const SizedBox(height: 32),
-          SignatureSection(theme: theme),
-          const SizedBox(height: 24),
-          FooterSection(theme: theme, company: invoice.company),
+          const SizedBox(height: 20),
+          _buildFooter(),
         ],
       ),
+    );
+  }
+
+  Widget _buildHeader(InvoiceModel invoice) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                invoice.company.name,
+                style: theme.type.bodyStrong.flutter.copyWith(fontSize: 13),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                invoice.company.address.singleLine,
+                style: theme.type.body.flutter.copyWith(fontSize: 11),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Phone: ${invoice.company.phone}',
+                style: theme.type.body.flutter.copyWith(fontSize: 11),
+              ),
+            ],
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              'INVOICE',
+              style: theme.type.documentTitle.flutter,
+            ),
+            const SizedBox(height: 15),
+            _buildMetaBox('DATE:', DateFormatter.display(invoice.date)),
+            const SizedBox(height: 8),
+            _buildMetaBox('INVOICE #', invoice.number),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMetaBox(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(label, style: theme.type.body.flutter.copyWith(fontSize: 11, fontWeight: FontWeight.bold)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xFF999999), width: 1),
+            color: Colors.white,
+          ),
+          child: Text(
+            value,
+            style: theme.type.body.flutter.copyWith(fontSize: 11),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBillingSection(InvoiceModel invoice) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: _buildBillingCard('BILL TO:', [
+            invoice.customer.name,
+            if (invoice.customer.billingAddress != null) invoice.customer.billingAddress!.singleLine,
+            if (invoice.customer.phone != null) 'Phone: ${invoice.customer.phone}',
+          ]),
+        ),
+        const SizedBox(width: 40),
+        Expanded(
+          child: _buildBillingCard('SHIP TO (if different):', []),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBillingCard(String title, List<String> lines) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          color: Color(theme.accent),
+          child: Text(
+            title,
+            style: theme.type.sectionLabel.flutter,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...lines.map((line) => Padding(
+          padding: const EdgeInsets.only(bottom: 2),
+          child: Text(line, style: theme.type.body.flutter.copyWith(fontSize: 11)),
+        )),
+      ],
+    );
+  }
+
+  Widget _buildInfoBar() {
+    return Container(
+      decoration: BoxDecoration(border: Border.all(color: Color(theme.divider))),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              _buildInfoCell('SALESPERSON'),
+              _buildInfoCell('P.O. #'),
+              _buildInfoCell('SHIP DATE'),
+              _buildInfoCell('SHIP VIA'),
+              _buildInfoCell('F.O.B.'),
+              _buildInfoCell('TERMS'),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
+              )),
+              Expanded(child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
+              )),
+              Expanded(child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
+              )),
+              Expanded(child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
+              )),
+              Expanded(child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(theme.divider)))),
+              )),
+              Expanded(child: Container(
+                padding: const EdgeInsets.all(8),
+              )),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCell(String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: Color(theme.accent),
+          border: Border(right: BorderSide(color: Color(theme.divider))),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: theme.type.tableHeader.flutter,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItemsTable(InvoiceTotals totals, String currency) {
+    return Table(
+      border: TableBorder.all(color: Color(theme.divider), width: 1),
+      columnWidths: const {
+        0: FractionColumnWidth(0.08),
+        1: FractionColumnWidth(0.45),
+        2: FractionColumnWidth(0.15),
+        3: FractionColumnWidth(0.15),
+        4: FractionColumnWidth(0.17),
+      },
+      children: [
+        TableRow(
+          decoration: BoxDecoration(color: Color(theme.accent)),
+          children: [
+            _buildTableHeaderCell('ITEM #'),
+            _buildTableHeaderCell('DESCRIPTION'),
+            _buildTableHeaderCell('QTY'),
+            _buildTableHeaderCell('UNIT PRICE'),
+            _buildTableHeaderCell('TOTAL'),
+          ],
+        ),
+        ...totals.lines.asMap().entries.map((entry) {
+          final isEven = entry.key % 2 == 0;
+          return TableRow(
+            decoration: BoxDecoration(
+              color: isEven ? Color(theme.surfaceMuted) : Colors.white,
+              border: Border(bottom: BorderSide(color: Color(theme.divider))),
+            ),
+            children: [
+              _buildTableCell(''),
+              _buildTableCell(entry.value.name),
+              _buildTableCell(entry.value.quantity.toStringAsFixed(2), align: TextAlign.right),
+              _buildTableCell('$currency ${entry.value.unitPrice.toStringAsFixed(2)}', align: TextAlign.right),
+              _buildTableCell('$currency ${entry.value.discountedAmount.toStringAsFixed(2)}', align: TextAlign.right),
+            ],
+          );
+        }),
+        // Add empty rows to match reference height
+        ...List.generate(8, (i) => TableRow(
+          decoration: BoxDecoration(
+            color: ((totals.lines.length + i) % 2 == 0) ? Color(theme.surfaceMuted) : Colors.white,
+            border: Border(bottom: BorderSide(color: Color(theme.divider))),
+          ),
+          children: [
+            _buildTableCell(''),
+            _buildTableCell(''),
+            _buildTableCell(''),
+            _buildTableCell(''),
+            _buildTableCell('${currency} 0.00', align: TextAlign.right),
+          ],
+        )),
+      ],
+    );
+  }
+
+  Widget _buildTableHeaderCell(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: Text(
+        text,
+        textAlign: TextAlign.left,
+        style: theme.type.tableHeader.flutter,
+      ),
+    );
+  }
+
+  Widget _buildTableCell(String text, {TextAlign align = TextAlign.left}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: Text(
+        text,
+        textAlign: align,
+        style: theme.type.tableCell.flutter,
+      ),
+    );
+  }
+
+  Widget _buildTotalsBox(InvoiceTotals totals, String currency) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Color(theme.divider)),
+        color: Color(theme.surfaceMuted),
+      ),
+      child: Column(
+        children: [
+          _buildTotalRow('SUBTOTAL', '$currency ${totals.subtotal.toStringAsFixed(2)}'),
+          _buildTotalRow('TAX RATE', '0.00%'),
+          _buildTotalRow('TAX', '$currency ${totals.tax.toStringAsFixed(2)}'),
+          _buildTotalRow('S & H', '$currency 0.00'),
+          _buildTotalRow('OTHER', '$currency 0.00'),
+          _buildTotalRow('TOTAL', '$currency ${totals.grandTotal.toStringAsFixed(2)}', isTotal: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTotalRow(String label, String value, {bool isTotal = false}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(theme.divider))),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                label,
+                style: (isTotal
+                  ? theme.type.grandTotalLabel.flutter
+                  : theme.type.totalLabel.flutter
+                ).copyWith(fontSize: 11),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: (isTotal
+                ? theme.type.grandTotalValue.flutter
+                : theme.type.totalValue.flutter
+              ).copyWith(fontSize: 11),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentsBox() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Color(theme.divider)),
+        color: Color(0xFFF0F0F0),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Other Comments or Special Instructions',
+            style: theme.type.body.flutter.copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(height: 80),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFooter() {
+    return Column(
+      children: [
+        Text(
+          'Thank You For Your Business!',
+          style: theme.type.footer.flutter.copyWith(fontStyle: FontStyle.italic, fontSize: 12),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          'If you have any questions about this invoice, please contact us',
+          style: theme.type.footer.flutter.copyWith(fontSize: 10, color: const Color(0xFF666666)),
+        ),
+      ],
     );
   }
 }
