@@ -48,6 +48,44 @@ void main() {
     }
   });
 
+  test('a consumer can catch the errors the service throws', () async {
+    final service = DocumentPdfService(
+      fontLoader: () => DocumentFonts.load(
+        loader: (key) async =>
+            File(key).readAsBytesSync().buffer.asByteData(),
+      ),
+    );
+
+    final empty = DocumentModel(
+      type: DocumentType.salesOrder,
+      invoice: InvoiceModel(
+        number: 'X',
+        date: DateTime(2026, 9, 21),
+        currency: 'INR',
+        company: const CompanyModel(
+          name: 'X',
+          phone: '',
+          email: '',
+          address: AddressModel(line1: 'X'),
+        ),
+        customer: const CustomerModel(name: 'X'),
+        items: const [],
+        payment: const PaymentInfo(method: 'cash'),
+      ),
+    );
+
+    // The host shows error.message in a snackbar, so both the base type and
+    // the message have to be reachable through the barrel.
+    await expectLater(
+      service.generate(empty),
+      throwsA(
+        isA<AppException>().having((e) => e.message, 'message', isNotEmpty),
+      ),
+    );
+    expect(const InvoiceValidationException('x'), isA<AppException>());
+    expect(const PdfGenerationException('x'), isA<AppException>());
+  });
+
   test('every document type and its geometry are reachable', () {
     for (final type in DocumentType.values) {
       expect(type.displayName, isNotEmpty);

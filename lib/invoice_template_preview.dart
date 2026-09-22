@@ -4,6 +4,7 @@
 /// nothing else, so anything they need must be exported here.
 library;
 
+export 'core/errors/app_exception.dart';
 export 'core/helpers/invoice_calculator.dart';
 export 'core/helpers/tax/tax_engine.dart';
 export 'data/yaml/yaml_loader.dart';
