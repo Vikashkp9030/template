@@ -85,6 +85,30 @@ ThermalPreview(
 
 Full details: [docs/integration.md](docs/integration.md).
 
+## 5b. Business documents (credit notes, challans, orders…)
+
+Eight documents reproduce the reference PDFs in `context/`: credit note
+(two layouts), delivery challan, packaging slip, sales invoice (two layouts),
+sales return and sales order.
+
+```dart
+final bytes = await DocumentPdfService().generate(
+  DocumentModel(type: DocumentType.salesInvoiceTemplate1, invoice: invoice),
+);
+```
+
+Or preview them:
+
+```dart
+Navigator.of(context).push(
+  MaterialPageRoute<void>(builder: (_) => const DocumentPreviewPage()),
+);
+```
+
+The **Documents** button on the invoice preview screen opens the same page
+with the bundled sample data. See
+[docs/business_documents.md](docs/business_documents.md).
+
 ## 6. How to generate PDF
 
 From the invoice preview screen: **Download PDF**, **Preview PDF**, **Print PDF**, **Share**.

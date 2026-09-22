@@ -26,3 +26,9 @@ flutter:
     - assets/sample_invoice.yaml
     - assets/sample_pos.yaml
     - assets/sample_erp.yaml
+    # Ubuntu (Ubuntu Font Licence 1.0) — the typeface the reference documents
+    # are set in. Loaded by DocumentFonts, not via a Flutter font family, so
+    # the PDF renderer can embed it.
+    - assets/fonts/Ubuntu-Regular.ttf
+    - assets/fonts/Ubuntu-Bold.ttf
+    - assets/fonts/Ubuntu-BoldItalic.ttf

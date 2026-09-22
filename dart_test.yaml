@@ -1,0 +1,4 @@
+tags:
+  # Tools rather than assertions: they write PDFs under build/documents/ so the
+  # output can be compared against the references in context/ by eye.
+  tool:

@@ -20,6 +20,7 @@ UI widgets must not contain tax math, YAML parsing, or printer command generatio
 | Data | `lib/data` | Dummy documents, YAML loader/parser |
 | Models | `lib/models` | Invoice, customer, company, printer config |
 | Features | `lib/features` | Dashboard, templates, preview, printing, settings |
+| Documents | `lib/features/documents` | The eight business documents rendered to PDF — see [business_documents.md](business_documents.md) |
 | Public API | `lib/invoice_template_preview.dart` | Stable exports for other apps |
 
 ## State

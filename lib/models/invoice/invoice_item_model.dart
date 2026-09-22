@@ -11,6 +11,7 @@ class InvoiceItemModel {
     this.taxRate = 0,
     this.freeQuantity = 0,
     this.description,
+    this.returnedQuantity,
   });
 
   final String sku;
@@ -27,6 +28,11 @@ class InvoiceItemModel {
   final double taxRate;
   final double freeQuantity;
   final String? description;
+
+  /// Quantity coming back on a sales return, which a return document prints
+  /// instead of [quantity]. It does not affect pricing — the credited amount
+  /// stays the one the original line was billed at.
+  final double? returnedQuantity;
 
   double get gross => quantity * unitPrice;
 

@@ -1,0 +1,468 @@
+﻿1. Suggested Invoice Layout (Zoho)
+Header
+* Company Logo
+* Company Name & Address
+* GSTIN
+* Invoice No.
+* Invoice Date
+* Due Date
+Customer Details
+* Bill To
+* Customer Name
+* Address
+* GSTIN
+* State / State Code
+Item Details
+#
+	Item Description
+	HSN/SAC
+	Qty
+	Rate
+	Discount
+	Tax
+	Amount
+	1
+	Product/Service
+	998xxx
+	2
+	₹1,000
+	₹100
+	18%
+	₹2,124
+	Tax Summary
+* Sub Total
+* Discount
+* CGST
+* SGST / IGST
+* Round Off
+* Grand Total
+Footer
+* Amount in Words
+* Bank Details
+* Payment Terms
+* Notes
+* Terms & Conditions
+* Authorized Signature
+Zoho-style customization options
+* 🧾 A4 Invoice
+* 🖨️ Thermal 80mm Invoice
+* GST-compliant format
+* Logo & company branding
+* Dynamic HSN/SAC
+* CGST/SGST/IGST
+* QR Code / UPI
+* Bank details
+* E-Invoice / IRN fields
+* Multiple invoice templates
+* Custom footer and terms
+🧾 Invoice Template – Customize Settings
+1. Template Settings
+* Template Name
+* Invoice Type: A4 / A5 / Thermal 58mm / Thermal 80mm
+* Default Template: ON/OFF
+* Template Status: Active/Inactive
+* Preview
+* Duplicate Template
+* Reset to Default
+2. Business Header
+* Show Logo: ON/OFF
+* Upload Logo
+* Logo Position: Left / Center / Right
+* Company Name: Show/Hide
+* Company Address: Show/Hide
+* Phone Number: Show/Hide
+* Email: Show/Hide
+* Website: Show/Hide
+* GSTIN: Show/Hide
+* PAN: Show/Hide
+3. Invoice Information
+Allow individual ON/OFF controls:
+* Invoice Number
+* Invoice Date
+* Due Date
+* Reference Number
+* Order Number
+* Customer ID
+* Salesperson
+* Cashier
+* Branch
+* Counter
+* POS Machine
+* Payment Terms
+4. Customer Section
+* Customer Name
+* Mobile Number
+* Email
+* Billing Address
+* Shipping Address
+* GSTIN
+* State
+* State Code
+* Place of Supply
+Display options:
+* Always Show
+* Show only when available
+* Hide
+5. Item Table Customization
+Allow Drag & Drop Column Ordering:
+S.No. → Item → SKU → HSN/SAC → Qty → Unit → Rate → Discount → Tax → Amount
+Each column should have:
+* 👁 Show/Hide
+* Drag & Drop
+* Column Name
+* Alignment: Left / Center / Right
+* Width
+* Decimal Precision
+6. Pricing & Tax
+* Subtotal
+* Item Discount
+* Invoice Discount
+* Taxable Amount
+* CGST
+* SGST
+* IGST
+* CESS
+* Other Charges
+* Packaging Charges
+* Round Off
+* Grand Total
+Each field should support Show/Hide.
+7. Payment Section
+* Payment Mode
+* Cash
+* Card
+* UPI
+* Bank Transfer
+* Credit
+* Paid Amount
+* Balance/Due Amount
+* Transaction ID
+* Payment Reference
+8. QR Code Settings
+* Show QR Code: ON/OFF
+* QR Type: UPI / Payment URL
+* UPI ID
+* QR Position: Left / Center / Right
+* QR Size
+* Show UPI ID below QR
+9. Footer Settings
+* Amount in Words
+* Customer Notes
+* Terms & Conditions
+* Return Policy
+* Warranty Information
+* Thank You Message
+* Authorized Signature
+* Digital Signature
+* Bank Details
+10. Appearance
+Font
+* Font Family
+* Font Size
+* Heading Size
+* Item Font Size
+Layout
+* Page Margin
+* Row Height
+* Column Spacing
+* Border Style
+* Border Width
+* Header/Footer spacing
+Branding
+* Primary Color
+* Secondary Color
+* Header Background
+* Text Color
+11. Number & Currency Settings
+* Currency: ₹ / $ / € etc.
+* Currency Symbol Position
+* Decimal Places
+* Quantity Decimal Places
+* Rate Decimal Places
+* Amount Decimal Places
+* Thousand Separator
+* Decimal Separator
+* Amount in Words Language
+12. GST / E-Invoice Fields
+For GST-enabled businesses:
+* GSTIN
+* HSN/SAC
+* Tax Rate
+* CGST
+* SGST
+* IGST
+* CESS
+* Place of Supply
+* Reverse Charge
+* E-Invoice QR
+* IRN
+* Ack No.
+* Ack Date
+* E-Way Bill No.
+13. Printing Settings
+* Printer Type: A4 / A5 / Thermal
+* Paper Width: 58mm / 80mm
+* Print Logo
+* Auto Print
+* Number of Copies
+* Print Customer Copy
+* Print Merchant Copy
+* Open Cash Drawer
+* Print Preview
+14. Advanced Settings
+Useful POS options:
+* Show Zero-Value Items
+* Show Free Items
+* Show Cancelled Items
+* Show Batch Number
+* Show Expiry Date
+* Show Serial Number
+* Show MRP
+* Show Selling Price
+* Show Barcode
+* Show Item Notes
+* Show Modifier/Add-ons
+* Show Table Number
+* Show Order Type
+* Show Delivery Address
+Recommended Admin UI
+Invoice Template
+────────────────────────────────────
+
+
+Template Name       [ Retail GST Invoice ]
+Invoice Size        [ A4 ▼ ]
+Default Template    [ ON ]
+
+
+┌─ Header ──────────────────────────┐
+│ ☑ Logo                            │
+│ ☑ Company Name                    │
+│ ☑ GSTIN                           │
+│ ☑ Address                         │
+└───────────────────────────────────┘
+
+
+┌─ Item Columns ────────────────────┐
+│ ☑ S.No.       ☰                   │
+│ ☑ Item        ☰                   │
+│ ☑ HSN/SAC     ☰                   │
+│ ☑ Qty         ☰                   │
+│ ☑ Rate        ☰                   │
+│ ☑ Discount    ☰                   │
+│ ☑ Tax         ☰                   │
+│ ☑ Amount      ☰                   │
+└───────────────────────────────────┘
+
+
+[ Save ]  [ Preview ]  [ Reset ]
+Best approach for a POS product: make every major invoice section configurable with Show/Hide + Drag & Drop + Preview, rather than creating separate hard-coded invoice designs. This gives the admin flexibility for retail, restaurant, pharmacy, wholesale and service invoices.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Vyapar-style Invoice Template Settings
+1. Template
+* Template Name
+* Invoice Type
+* A4 / A5 / Thermal
+* Portrait / Landscape
+* Default Template
+* Preview
+2. Business Details
+* Business Logo
+* Business Name
+* Address
+* Mobile
+* Email
+* GSTIN
+* PAN
+* Website
+* Bank Details
+3. Invoice Details
+* Invoice Number
+* Invoice Date
+* Due Date
+* Order Number
+* Reference Number
+* Salesperson
+* Payment Terms
+4. Customer Details
+* Customer Name
+* Mobile
+* Address
+* GSTIN
+* State
+* State Code
+* Shipping Address
+5. Item Table
+* Item Name
+* Item Code
+* HSN/SAC
+* Batch
+* Expiry
+* Quantity
+* Unit
+* MRP
+* Rate
+* Discount
+* Tax
+* Amount
+6. Tax & Total
+* Subtotal
+* Discount
+* CGST
+* SGST
+* IGST
+* Cess
+* Other Charges
+* Round Off
+* Grand Total
+* Amount in Words
+7. Payment
+* Payment Mode
+* Paid Amount
+* Balance/Due
+* UPI QR Code
+* Transaction Reference
+8. Footer
+* Notes
+* Terms & Conditions
+* Return Policy
+* Declaration
+* Signature
+* Thank You Message
+Useful POS feature
+For your software, I recommend adding a Customize Invoice screen like:
+Sections | Fields | Show/Hide | Order | Alignment
+For example:
+☑ Logo                  ☰
+☑ Business Name         ☰
+☑ GSTIN                 ☰
+☑ Customer Name         ☰
+☑ Invoice Number        ☰
+☑ Invoice Date          ☰
+☑ HSN/SAC               ☰
+☑ Quantity              ☰
+☑ Rate                  ☰
+☑ Discount              ☰
+☑ Tax                   ☰
+☑ Grand Total           ☰
+☑ QR Code               ☰
+☑ Terms & Conditions    ☰
+☰ = Drag & Drop
+This would give your POS invoice designer a Vyapar-like configurable template system without hard-coding the invoice layout.
+
+
+
+
+
+
+
+
+
+
+
+
+A4 Invoice Sample Layout 
+┌──────────────────────────────────────────────────────────────────────┐
+│                         YOUR BUSINESS LOGO                            │
+│                         YOUR BUSINESS NAME                           │
+│ Address: 123, Main Road, Delhi - 110001                              │
+│ Mobile: 9876543210 | Email: sales@company.com                        │
+│ GSTIN: 07XXXXXXXXXX1ZX                                              │
+├──────────────────────────────────────────────────────────────────────┤
+│                         TAX INVOICE                                  │
+│                                                                      │
+│ Invoice No: INV-000125              Invoice Date: 21-Sep-2026        │
+│ Due Date: 28-Sep-2026               Place of Supply: Delhi           │
+├──────────────────────────────────────────────────────────────────────┤
+│ BILL TO                              │ SHIP TO                        │
+│ Customer Name: ABC Enterprises      │ ABC Enterprises                │
+│ Address: New Delhi                   │ Delivery Address               │
+│ GSTIN: 07XXXXXXXXXX1ZX              │ Delhi                           │
+│ Mobile: 9876543210                   │                                 │
+├────┬────────────────┬───────┬────┬────────┬────────┬────────┬────────┤
+│ #  │ Item           │ HSN   │Qty │ Rate   │ Disc.  │ Tax    │ Amount │
+├────┼────────────────┼───────┼────┼────────┼────────┼────────┼────────┤
+│ 1  │ Product A      │ 8471  │ 2  │ 500.00 │ 20.00  │ 18%    │ 1,132  │
+│ 2  │ Product B      │ 8528  │ 1  │ 800.00 │ 50.00  │ 18%    │ 885    │
+├────┴────────────────┴───────┴────┴────────┴────────┴────────┴────────┤
+│                                              Sub Total: ₹ 1,700.00   │
+│                                              Discount:  ₹    70.00   │
+│                                              Taxable:   ₹ 1,630.00   │
+│                                              CGST 9%:   ₹   146.70   │
+│                                              SGST 9%:   ₹   146.70   │
+│                                              Round Off: ₹     0.60   │
+│                                              ─────────────────────── │
+│                                              GRAND TOTAL ₹1,924.00   │
+├──────────────────────────────────────────────────────────────────────┤
+│ Amount in Words: Rupees One Thousand Nine Hundred Twenty Four Only   │
+├──────────────────────────────────────┬───────────────────────────────┤
+│ PAYMENT DETAILS                     │        UPI QR CODE             │
+│ Bank: ABC Bank                      │                               │
+│ A/C No: XXXXXXXX1234                │          █████████             │
+│ IFSC: ABCD0001234                   │          █ QR CODE █            │
+│ UPI: business@upi                   │          █████████             │
+├──────────────────────────────────────┴───────────────────────────────┤
+│ Notes: Thank you for your business.                                  │
+│ Terms & Conditions: Goods once sold are subject to company policy.   │
+│                                                                      │
+│                                      Authorized Signature             │
+│                                      __________________               │
+│                                                                      │
+│                         Thank You For Your Business                   │
+└──────────────────────────────────────────────────────────────────────┘
+Customization Panel
+For your POS admin panel, I would suggest a left-side settings + right-side live preview design:
+┌─────────────────────┬───────────────────────────────────────────────┐
+│ INVOICE SETTINGS    │              LIVE PREVIEW                     │
+│                     │                                               │
+│ Header          >   │       ┌─────────────────────────┐             │
+│ Business        >   │       │       LOGO              │             │
+│ Customer        >   │       │    BUSINESS NAME        │             │
+│ Invoice Details >   │       │                         │             │
+│ Items           >   │       │      TAX INVOICE        │             │
+│ Tax & Total     >   │       │                         │             │
+│ Payment         >   │       │   Customer | Invoice    │             │
+│ QR Code         >   │       │                         │             │
+│ Footer          >   │       │   ITEM TABLE            │             │
+│ Appearance      >   │       │                         │             │
+│ Printing        >   │       │   TOTAL                 │             │
+│                     │       │                         │             │
+│ [Save Template]    │       └─────────────────────────┘             │
+└─────────────────────┴───────────────────────────────────────────────┘

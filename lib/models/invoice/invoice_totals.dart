@@ -1,3 +1,5 @@
+import 'tax_model.dart';
+
 class InvoiceTotals {
   const InvoiceTotals({
     required this.subtotal,
@@ -54,10 +56,17 @@ class TaxLineTotal {
     required this.rate,
     required this.taxableAmount,
     required this.amount,
+    this.kind = TaxKind.none,
+    this.groupRate,
   });
 
   final String label;
   final double rate;
+
+  /// Rate of the tax this line was split out of; see [TaxLine.groupRate].
+  final double? groupRate;
+
+  final TaxKind kind;
   final double taxableAmount;
   final double amount;
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app/theme.dart';
-import 'features/preview/invoice_preview_page.dart';
+import 'features/documents/presentation/document_preview_page.dart';
 
 void main() {
   runApp(const InvoiceTemplateApp());
@@ -13,10 +13,10 @@ class InvoiceTemplateApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Invoice Template Preview',
+      title: 'Business Documents',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
-      home: const InvoicePreviewPage(),
+      home: const DocumentPreviewPage(),
     );
   }
 }

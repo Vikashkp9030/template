@@ -105,6 +105,8 @@ class InvoiceCalculator {
           TaxLineTotal(
             label: t.label,
             rate: t.rate,
+            groupRate: t.groupRate,
+            kind: t.kind,
             taxableAmount: t.taxableAmount,
             amount: t.amount,
           ),
