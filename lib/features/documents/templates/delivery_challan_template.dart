@@ -64,7 +64,7 @@ class DeliveryChallanTemplate extends DocumentPdfTemplate {
               left: textWidth + inset - ModernSections.titleWidth(textWidth),
               right: textWidth + inset,
               title: document.title,
-              number: '${document.type.numberLabel} ${document.number}',
+              number: document.numberLine,
               titleBaseline: 33.71,
               numberBaseline: 81.20,
               titleStep: 32.04,

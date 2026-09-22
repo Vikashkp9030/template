@@ -77,7 +77,7 @@ class PackagingSlipTemplate extends DocumentPdfTemplate {
               left: 0,
               right: textWidth + inset,
               title: document.title,
-              number: '${document.type.numberLabel} ${document.number}',
+              number: document.numberLine,
               titleBaseline: 31.91,
               numberBaseline: 47.40,
             ),
@@ -123,7 +123,7 @@ class PackagingSlipTemplate extends DocumentPdfTemplate {
   /// total quantity in a shaded cell at the right.
   List<PlacedBlock> _detailStrip(DocumentSkin skin, DocumentModel document) {
     final cells = <(String, String)>[
-      (document.type.numberLabel, document.number),
+      (document.numberLabel ?? document.type.numberLabel, document.number),
       (
         'Order Date',
         DocumentFormat.date(document.orderDate ?? document.invoice.date),

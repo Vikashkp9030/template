@@ -259,7 +259,7 @@ class SalesInvoiceTemplate1 extends DocumentPdfTemplate {
       );
 
   List<MetaRow> _metaRows(DocumentModel document) => [
-    MetaRow(document.type.numberLabel, document.number),
+    MetaRow(document.numberLabel ?? document.type.numberLabel, document.number),
     MetaRow('Invoice Date', DocumentFormat.date(document.invoice.date)),
     if ((document.paymentTerms ?? '').isNotEmpty)
       MetaRow('Terms', document.paymentTerms!),

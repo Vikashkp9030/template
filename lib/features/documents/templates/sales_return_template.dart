@@ -67,7 +67,7 @@ class SalesReturnTemplate extends DocumentPdfTemplate {
               left: 0,
               right: textWidth + inset,
               title: document.title,
-              number: '${document.type.numberLabel} ${document.number}',
+              number: document.numberLine,
               titleBaseline: 31.91,
               numberBaseline: 47.40,
             ),

@@ -75,7 +75,7 @@ class CreditNoteTemplate2 extends DocumentPdfTemplate {
               left: 0,
               right: textWidth + inset,
               title: document.title,
-              number: '${document.type.numberLabel} ${document.number}',
+              number: document.numberLine,
               titleBaseline: 33.71,
               numberBaseline: 48.64,
               highlightLabel: 'Credits Remaining',

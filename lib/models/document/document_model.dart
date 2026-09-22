@@ -14,6 +14,7 @@ class DocumentModel {
   const DocumentModel({
     required this.type,
     required this.invoice,
+    this.numberLabel,
     this.referenceNumber,
     this.linkedInvoiceNumber,
     this.linkedInvoiceDate,
@@ -41,6 +42,14 @@ class DocumentModel {
 
   final DocumentType type;
   final InvoiceModel invoice;
+
+  /// Overrides the label printed before [number].
+  ///
+  /// Each type has a default that matches its reference document, but a host
+  /// mapping a wider set of transactions onto these layouts needs its own —
+  /// a purchase order rendered in the sales-order layout should not be
+  /// labelled "Sales Order#".
+  final String? numberLabel;
 
   /// `Ref#` on credit notes, challans and sales orders; `P.O.#` on invoices.
   final String? referenceNumber;
@@ -99,9 +108,13 @@ class DocumentModel {
       ? type.title
       : invoice.documentTitle;
 
+  /// The number as it is printed, label and all — `Package# PKG-17`.
+  String get numberLine => '${numberLabel ?? type.numberLabel} $number'.trim();
+
   DocumentModel copyWith({
     DocumentType? type,
     InvoiceModel? invoice,
+    String? numberLabel,
     String? referenceNumber,
     String? linkedInvoiceNumber,
     DateTime? linkedInvoiceDate,
@@ -129,6 +142,7 @@ class DocumentModel {
     return DocumentModel(
       type: type ?? this.type,
       invoice: invoice ?? this.invoice,
+      numberLabel: numberLabel ?? this.numberLabel,
       referenceNumber: referenceNumber ?? this.referenceNumber,
       linkedInvoiceNumber: linkedInvoiceNumber ?? this.linkedInvoiceNumber,
       linkedInvoiceDate: linkedInvoiceDate ?? this.linkedInvoiceDate,

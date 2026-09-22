@@ -218,7 +218,7 @@ class CreditNoteTemplate1 extends DocumentPdfTemplate {
       );
 
   List<MetaRow> _metaRows(DocumentModel document) => [
-    MetaRow(document.type.numberLabel, document.number),
+    MetaRow(document.numberLabel ?? document.type.numberLabel, document.number),
     MetaRow('Credit Date', DocumentFormat.date(document.invoice.date)),
     if ((document.referenceNumber ?? '').isNotEmpty)
       MetaRow('Ref#', document.referenceNumber!),

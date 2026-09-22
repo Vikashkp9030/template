@@ -78,7 +78,7 @@ class SalesInvoiceTemplate2 extends DocumentPdfTemplate {
               left: textWidth + inset - ModernSections.titleWidth(textWidth),
               right: textWidth + inset,
               title: document.title,
-              number: '${document.type.numberLabel} ${document.number}',
+              number: document.numberLine,
               titleBaseline: 33.71,
               numberBaseline: 48.64,
               titleStep: 32.04,
