@@ -29,9 +29,22 @@ class DocumentFonts {
   final pw.Font serifRegular;
   final pw.Font serifBold;
 
-  static const _ubuntuRegular = 'assets/fonts/Ubuntu-Regular.ttf';
-  static const _ubuntuBold = 'assets/fonts/Ubuntu-Bold.ttf';
-  static const _ubuntuBoldItalic = 'assets/fonts/Ubuntu-BoldItalic.ttf';
+  /// Name this package publishes under, used to qualify its asset keys.
+  static const packageName = 'invoice_template_preview';
+
+  static const _fontDir = 'assets/fonts';
+
+  /// Asset keys to try, in order.
+  ///
+  /// The fonts are assets of this package, so a host app bundles them under
+  /// `packages/<name>/` — asking for the bare path there is a 404. Running
+  /// this package's own app bundles them at the bare path instead, so both
+  /// are tried and the package-qualified one comes first because that is the
+  /// normal case.
+  static List<String> assetKeys(String fileName) => [
+    'packages/$packageName/$_fontDir/$fileName',
+    '$_fontDir/$fileName',
+  ];
 
   /// Ubuntu metrics, shared by every Ubuntu weight (hhea ascender 932,
   /// descender -189 per 1000 units). The renderer places a baseline at
@@ -50,22 +63,44 @@ class DocumentFonts {
     final read = loader ?? rootBundle.load;
     try {
       return DocumentFonts(
-        sansRegular: pw.Font.ttf(await read(_ubuntuRegular)),
-        sansBold: pw.Font.ttf(await read(_ubuntuBold)),
-        sansBoldItalic: pw.Font.ttf(await read(_ubuntuBoldItalic)),
+        sansRegular: pw.Font.ttf(await _read(read, 'Ubuntu-Regular.ttf')),
+        sansBold: pw.Font.ttf(await _read(read, 'Ubuntu-Bold.ttf')),
+        sansBoldItalic: pw.Font.ttf(
+          await _read(read, 'Ubuntu-BoldItalic.ttf'),
+        ),
         serifRegular: pw.Font.times(),
         serifBold: pw.Font.timesBold(),
       );
+    } on AppException {
+      rethrow;
     } catch (error, stack) {
       Error.throwWithStackTrace(
         PdfGenerationException(
           'Unable to load the document fonts. Check that the Ubuntu font '
-          'files are bundled under assets/fonts/.',
+          'files are bundled under $_fontDir/.',
           cause: error,
         ),
         stack,
       );
     }
+  }
+
+  static Future<ByteData> _read(FontAssetLoader read, String fileName) async {
+    Object? failure;
+    for (final key in assetKeys(fileName)) {
+      try {
+        return await read(key);
+      } catch (error) {
+        failure = error;
+      }
+    }
+    throw PdfGenerationException(
+      'Unable to load the document font $fileName. It is an asset of the '
+      '$packageName package, so a host app must not strip package assets '
+      'from its bundle; the keys tried were '
+      '${assetKeys(fileName).join(' and ')}.',
+      cause: failure,
+    );
   }
 
   /// Falls back to the built-in Helvetica family when the Ubuntu assets are
